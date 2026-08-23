@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zen: AI Agent for Customer Onboarding &amp; Success</title>
+<meta name="description" content="Zen is an AI onboarding agent that works directly with your customers. It understands what they need, sees their screen, guides them through your product, and escalates when a human is genuinely needed." />
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="Zen home">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/>
+      </svg>
+      <span class="logo-word">Zen</span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <div class="nav-item has-menu">
+        <button class="nav-link" aria-expanded="false">Product <svg class="chev" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <div class="mega">
+          <a href="demo.html"><strong>Onboarding Agent</strong><span>Live, screen-aware guided sessions</span></a>
+          <a href="dashboard.html"><strong>Admin Hub</strong><span>Progress, blockers and escalations</span></a>
+          <a href="#insights"><strong>Lifecycle Agent</strong><span>Adoption nudges after go-live</span></a>
+          <a href="#getting-started"><strong>Knowledge Engine</strong><span>Turn your docs into an agent</span></a>
+        </div>
+      </div>
+      <div class="nav-item has-menu">
+        <button class="nav-link" aria-expanded="false">Use cases <svg class="chev" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <div class="mega">
+          <a href="#use-cases"><strong>For Customer Success</strong><span>Scale high-touch onboarding</span></a>
+          <a href="#use-cases"><strong>For Product</strong><span>See where users drop off</span></a>
+          <a href="#use-cases"><strong>For Founders</strong><span>Activate without headcount</span></a>
+          <a href="#use-cases"><strong>For Support</strong><span>Deflect setup tickets</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="#faq">Trust &amp; Security</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="link-plain" href="dashboard.html">Login</a>
+      <a class="btn btn-primary" href="#book">Get a demo</a>
+    </div>
+
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#how">Product</a>
+    <a href="#use-cases">Use cases</a>
+    <a href="#faq">Trust &amp; Security</a>
+    <a href="demo.html">Live demo</a>
+    <a href="dashboard.html">Admin Hub</a>
+    <a class="btn btn-primary" href="#book">Get a demo</a>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <h1 class="display">
+        Get every customer<br />to value without<br />
+        <span class="accent">yet another call.
+          <svg class="squiggle" viewBox="0 0 320 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8C60 3 120 3 178 6c50 2 90 3 140 1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        </span>
+      </h1>
+      <p class="lede">Zen is an AI onboarding agent that works directly with your customers. It understands what they need to accomplish, sees their screen, guides them through your product, and escalates to your team when something genuinely needs a human.</p>
+
+      <form class="email-form" data-demo-form>
+        <input type="email" placeholder="Your work email" aria-label="Your work email" required />
+        <button class="btn btn-primary" type="submit">Get a demo</button>
+        <p class="form-note" hidden>Thanks — we'll be in touch within one business day.</p>
+      </form>
+      <a class="try-link" href="demo.html">Give it a try <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="hero-visual">
+      <!-- fake product screenshot -->
+      <div class="app-shot" aria-hidden="true">
+        <div class="app-shot-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <div class="fake-url">app.zenith-health.com</div>
+        </div>
+        <div class="app-shot-body">
+          <p class="shot-hello">Welcome back, John</p>
+          <p class="shot-sub">Here's what's happening across your practice this week</p>
+          <div class="kpi-row">
+            <div class="kpi"><span class="kpi-label">Practitioners</span><b>50.8K</b><i class="up">+18.1%</i></div>
+            <div class="kpi"><span class="kpi-label">Monthly users</span><b>23.6K</b><i class="up">+12.6%</i></div>
+            <div class="kpi"><span class="kpi-label">New patients</span><b>756</b><i class="down">-2.4%</i></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head"><span>Total revenue</span><b>$240.8K</b></div>
+            <svg class="spark" viewBox="0 0 300 90" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9400FF" stop-opacity=".22"/><stop offset="100%" stop-color="#9400FF" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0 70 C40 62 55 30 90 34 C125 38 140 74 175 66 C205 59 220 18 260 22 L300 14 L300 90 L0 90 Z" fill="url(#g1)"/>
+              <path d="M0 70 C40 62 55 30 90 34 C125 38 140 74 175 66 C205 59 220 18 260 22 L300 14" fill="none" stroke="#9400FF" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="bars-card">
+            <div class="chart-head"><span>Sessions</span><b>400</b></div>
+            <div class="bars"><i style="height:38%"></i><i style="height:62%"></i><i style="height:47%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:92%"></i><i style="height:70%"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zen agent widget mock -->
+      <div class="agent-card">
+        <div class="agent-card-head">
+          <span class="agent-name"><svg class="logo-mark sm" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg> Zen</span>
+          <span class="agent-icons"><i>⌄</i><i>⤢</i><i>✕</i></span>
+        </div>
+        <div class="agent-video">
+          <div class="agent-avatar">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="52" r="22" fill="#C79BF0"/>
+              <path d="M14 120c0-26 20-46 46-46s46 20 46 46z" fill="#A05FE0"/>
+            </svg>
+            <span class="live-tag"><span class="live-dot"></span> Zen</span>
+          </div>
+          <div class="agent-controls">
+            <span class="pill">En ⌄</span><span class="pill">🎙 ⌄</span><span class="pill">🖥 Share</span><span class="pill">📞 Call</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p class="agent-say">Let's start with the dashboard, what would you like to do?</p>
+          <button class="agent-choice">Book a first appointment</button>
+          <button class="agent-choice">Add a practitioner</button>
+          <button class="agent-choice">Something else</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- logos -->
+  <div class="wrap logo-strip">
+    <div class="marquee">
+      <div class="marquee-track">
+        <span>Northwind</span><span>Gorgias</span><span>Qualia</span><span>Cerby</span><span>Uptick</span><span>Canibuild</span><span>Budgetly</span><span>HubSpot</span>
+        <span>Northwind</span><span>Gorgias</span><span>Qualia</span><span>Cerby</span><span>Uptick</span><span>Canibuild</span><span>Budgetly</span><span>HubSpot</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- video teaser -->
+  <div class="wrap video-strip">
+    <button class="video-card" id="videoCard" aria-label="Play hero video">
+      <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l12 7-12 7z" fill="currentColor"/></svg></span>
+      <span class="video-label">Watch Zen in action <em>1:24</em></span>
+    </button>
+  </div>
+
+  <!-- stats -->
+  <div class="wrap stats-strip reveal">
+    <span class="eyebrow"><i>•</i> Proven results</span>
+    <div class="stats">
+      <div class="stat"><b data-count="2" data-suffix="x">2x</b><span>faster onboarding</span></div>
+      <div class="stat"><b data-count="5000" data-suffix="+">5,000+</b><span>sessions delivered every month</span></div>
+      <div class="stat"><b>24/7</b><span>multi-lingual coverage</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section problem" id="problem">
+  <div class="wrap split-head reveal">
+    <div>
+      <span class="eyebrow"><i>•</i> Problem</span>
+      <h2 class="display sm">Customer onboarding<br />still depends on<br /><span class="accent">human availability.</span></h2>
+    </div>
+    <div class="problem-list">
+      <article class="reveal">
+        <h3>Every customer needs something different.</h3>
+        <p>Different use cases, different technical setups, different timezones. There is no single onboarding flow that works for all of them, but your team doesn't have the bandwidth to run a custom process for each one.</p>
+      </article>
+      <article class="reveal">
+        <h3>Your team becomes the bottleneck.</h3>
+        <p>Every question, every walkthrough, every stuck moment routes back to a human. Your best people spend their time repeating the same sessions instead of working the accounts that actually need strategic attention.</p>
+      </article>
+      <article class="reveal">
+        <h3>When customers get stuck, progress stops.</h3>
+        <p>They hit a step they can't get past and go quiet. Your team follows up days later. By then, momentum is gone, and the window to activate them has closed.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOLUTION ============ -->
+<section class="section solution centered">
+  <div class="wrap reveal">
+    <span class="eyebrow center"><i>•</i> Solution</span>
+    <h2 class="display md center">Meet Zen. Your AI onboarding manager.</h2>
+    <p class="lede center narrow">Zen works directly with your customers. It understands what they need to accomplish, sees their screen, guides them through the work, and escalates to your team when something genuinely needs a human.</p>
+  </div>
+</section>
+
+<div class="wrap guide-band reveal">
+  <div class="guide-inner">
+    <div class="ghost-app" aria-hidden="true">
+      <div class="ghost-row"><span class="g-line w40"></span></div>
+      <div class="ghost-kpis"><i></i><i></i><i></i><i></i></div>
+      <div class="ghost-charts"><i></i><i></i></div>
+    </div>
+    <button class="guide-me" id="guideMe">
+      <span class="eq"><i></i><i></i><i></i><i></i></span> Guide me
+    </button>
+    <div class="ghost-panel" aria-hidden="true">
+      <div class="gp-head">agent.getzen.ai</div>
+      <p>Where would you like to start?</p>
+      <span>Connect integrations</span>
+      <span>Set up your workspace</span>
+      <span>Invite users</span>
+      <span>Set roles and permissions</span>
+    </div>
+    <div class="guide-toast">Done! QuickBooks connected.</div>
+  </div>
+</div>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section how" id="how">
+  <div class="wrap two-col reveal">
+    <div>
+      <span class="eyebrow"><i>•</i> How Zen works</span>
+      <h2 class="display sm">Understands. Sees.<br /><span class="accent">Guides. Escalates.</span></h2>
+
+      <div class="accordion" data-accordion="how">
+        <div class="acc-item is-open" data-panel="0">
+          <button class="acc-btn">Understands each customer.</button>
+          <div class="acc-body"><p>Zen starts every session by understanding the customer's goals, their setup, and what they're trying to achieve. No fixed script. It builds a tailored plan for each customer based on their actual situation.</p></div>
+        </div>
+        <div class="acc-item" data-panel="1">
+          <button class="acc-btn">Sees their screen.</button>
+          <div class="acc-body"><p>With one click the customer shares their screen. Zen reads the live UI, knows exactly which step they're on, and never gives generic instructions that don't match what's in front of them.</p></div>
+        </div>
+        <div class="acc-item" data-panel="2">
+          <button class="acc-btn">Guides every step.</button>
+          <div class="acc-body"><p>Zen highlights the exact button, explains why it matters, and waits. If the customer takes a wrong turn, it course-corrects in real time instead of letting them stall.</p></div>
+        </div>
+        <div class="acc-item" data-panel="3">
+          <button class="acc-btn">Escalates when needed.</button>
+          <div class="acc-body"><p>Contract questions, custom pricing, edge-case bugs. Zen recognises what it shouldn't answer, hands over to your team with the full session context attached, and keeps the customer informed.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-visuals">
+      <figure class="hv is-active" data-visual="0">
+        <div class="hv-card">
+          <span class="hv-tag">Session plan</span>
+          <p class="hv-q">"We're a 12-clinic group moving off spreadsheets."</p>
+          <ul class="hv-steps">
+            <li><span class="tick">✓</span> Import practitioner list</li>
+            <li><span class="tick">✓</span> Connect calendar</li>
+            <li><span class="tick idle"></span> Configure billing rules</li>
+            <li><span class="tick idle"></span> Invite front-desk staff</li>
+          </ul>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="1">
+        <div class="hv-card screen">
+          <div class="screen-bar"><span></span><span></span><span></span><em>Screen shared</em></div>
+          <div class="screen-body">
+            <div class="spot"></div>
+            <p class="hv-callout">I can see the Integrations tab — click <b>Connect</b> next to QuickBooks.</p>
+          </div>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="2">
+        <div class="hv-card">
+          <span class="hv-tag">Live guidance</span>
+          <div class="bubble bot">Nice — now open <b>Settings → Billing</b>.</div>
+          <div class="bubble user">Done. It's asking for a tax code?</div>
+          <div class="bubble bot">Use <b>GST-FREE</b> for consults. I'll wait.</div>
+          <div class="typing"><i></i><i></i><i></i></div>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="3">
+        <div class="hv-card">
+          <span class="hv-tag esc">Escalated to human</span>
+          <p class="hv-q">"Can we get an enterprise SSO add-on this quarter?"</p>
+          <div class="esc-row"><span class="av">TG</span><div><b>Tanya Goel</b><span>Assigned · Account: Northwind Group</span></div></div>
+          <p class="hv-note">Full transcript, screen recording and 7 completed steps attached.</p>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEFORE / AFTER ============ -->
+<section class="section compare">
+  <div class="wrap reveal">
+    <span class="eyebrow center"><i>•</i> Before &amp; after</span>
+    <h2 class="display md center">A better way to onboard<br />your customers.</h2>
+    <div class="compare-grid">
+      <div class="col before">
+        <h3>Before Zen</h3>
+        <ul>
+          <li><span class="mark x">✕</span> Scheduling calls for every new customer.</li>
+          <li><span class="mark x">✕</span> Customers waiting on your team to reply.</li>
+          <li><span class="mark x">✕</span> Progress stops when customers get stuck.</li>
+          <li><span class="mark x">✕</span> Customers training their own staff.</li>
+          <li><span class="mark x">✕</span> Your team manually tracking where each account is.</li>
+        </ul>
+      </div>
+      <div class="col after">
+        <h3>With Zen</h3>
+        <ul>
+          <li><span class="mark v">✓</span> Zen runs every session automatically, 24/7.</li>
+          <li><span class="mark v">✓</span> Customers get answers while they're in the product.</li>
+          <li><span class="mark v">✓</span> Zen guides customers through blockers in real time.</li>
+          <li><span class="mark v">✓</span> Zen trains every end user.</li>
+          <li><span class="mark v">✓</span> Your team sees progress without asking.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSIGHTS ============ -->
+<section class="section insights" id="insights">
+  <div class="wrap reveal centered">
+    <span class="eyebrow center"><i>•</i> Insights</span>
+    <h2 class="display md center">Automate the work<br /><span class="accent">without losing visibility.</span></h2>
+    <p class="lede center narrow">Zen handles the sessions. Your team keeps full visibility into what's happening: which customers are progressing, where they're getting stuck, and what needs a human to step in.</p>
+  </div>
+  <div class="wrap cards-2">
+    <article class="icard reveal">
+      <div class="icard-visual">
+        <div class="mini-table">
+          <div class="mt-row head"><span>Customer</span><span>Progress</span><span>Status</span></div>
+          <div class="mt-row"><span>Northwind Group</span><span class="bar"><i style="width:92%"></i></span><em class="ok">Live</em></div>
+          <div class="mt-row"><span>Cerby Labs</span><span class="bar"><i style="width:64%"></i></span><em>In progress</em></div>
+          <div class="mt-row"><span>Uptick Field</span><span class="bar"><i style="width:31%"></i></span><em class="warn">Stuck</em></div>
+          <div class="mt-row"><span>Budgetly</span><span class="bar"><i style="width:78%"></i></span><em>In progress</em></div>
+        </div>
+      </div>
+      <h3>Track Progress</h3>
+      <p>See exactly where every customer is in their onboarding. What they've completed, where they got stuck, and which accounts need your team's attention, without asking.</p>
+      <a class="link-arrow" href="dashboard.html">Open the Admin Hub <span aria-hidden="true">→</span></a>
+    </article>
+    <article class="icard reveal">
+      <div class="icard-visual">
+        <div class="insight-note">
+          <span class="in-icon">◎</span>
+          <p>Based on the session reports, users are consistently dropping off at the <b>"Sync CRM"</b> step because they can't find their provider in the main list. Moving the most popular CRM logos to the top of the gallery would speed up the connection process.</p>
+        </div>
+        <div class="insight-note dim">
+          <span class="in-icon">◎</span>
+          <p>3 customers this week asked about custom invoice templates — not covered by your docs.</p>
+        </div>
+      </div>
+      <h3>Understand Blockers</h3>
+      <p>Every question Zen couldn't answer and every blocker it couldn't clear is captured and routed to your team, with full context, so your people can act immediately.</p>
+      <a class="link-arrow" href="dashboard.html#blockers">See escalations <span aria-hidden="true">→</span></a>
+    </article>
+  </div>
+</section>
+
+<!-- ============ GETTING STARTED ============ -->
+<section class="section getting" id="getting-started">
+  <div class="wrap two-col reveal">
+    <div>
+      <span class="eyebrow"><i>•</i> Getting started</span>
+      <h2 class="display sm">Go live in days.<br /><span class="accent">Not months.</span></h2>
+      <div class="accordion" data-accordion="start">
+        <div class="acc-item is-open" data-panel="0">
+          <button class="acc-btn">Connect your knowledge.</button>
+          <div class="acc-body"><p>Upload your existing training videos, help docs, and/or connect your knowledge base. Zen learns your product instantly and uses that knowledge in every customer session.</p></div>
+        </div>
+        <div class="acc-item" data-panel="1">
+          <button class="acc-btn">Outline your process.</button>
+          <div class="acc-body"><p>Describe your onboarding milestones in plain English. Zen turns them into an adaptive plan it can re-order for each customer.</p></div>
+        </div>
+        <div class="acc-item" data-panel="2">
+          <button class="acc-btn">Test real scenarios.</button>
+          <div class="acc-body"><p>Run Zen against your own product with real edge cases. Review transcripts, correct answers inline, and Zen updates instantly.</p></div>
+        </div>
+        <div class="acc-item" data-panel="3">
+          <button class="acc-btn">Launch.</button>
+          <div class="acc-body"><p>Drop in one script tag or share a session link. Zen starts running sessions the same day — in 30+ languages, around the clock.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="how-visuals">
+      <figure class="hv is-active" data-visual="0">
+        <div class="hv-card upload">
+          <div class="up-head"><b>Upload Content</b><span>We will use it to train your agent</span></div>
+          <div class="dropzone">
+            <span class="file f1">PDF</span><span class="file f2">MP4</span><span class="file f3">DOC</span>
+            <p>Drop files here</p>
+          </div>
+          <div class="up-row"><span>product-guide.pdf</span><i class="ok">✓</i></div>
+          <div class="up-row"><span>onboarding-walkthrough.mp4</span><i class="ok">✓</i></div>
+          <div class="up-row"><span>help-center.zendesk.com</span><i class="sync">⟳</i></div>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="1">
+        <div class="hv-card">
+          <span class="hv-tag">Onboarding plan</span>
+          <ol class="plan">
+            <li><b>1</b> Create workspace</li>
+            <li><b>2</b> Import data</li>
+            <li><b>3</b> Connect integrations</li>
+            <li><b>4</b> Invite team &amp; set roles</li>
+            <li><b>5</b> First successful workflow</li>
+          </ol>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="2">
+        <div class="hv-card">
+          <span class="hv-tag">Test run · 24 scenarios</span>
+          <div class="test-row"><span>New clinic, no data</span><em class="ok">Passed</em></div>
+          <div class="test-row"><span>Migrating from spreadsheets</span><em class="ok">Passed</em></div>
+          <div class="test-row"><span>Multi-region tax setup</span><em class="warn">Needs review</em></div>
+          <div class="test-row"><span>SSO enterprise tenant</span><em class="ok">Passed</em></div>
+        </div>
+      </figure>
+      <figure class="hv" data-visual="3">
+        <div class="hv-card code">
+          <span class="hv-tag">Install</span>
+          <pre><code>&lt;script
+  src="https://cdn.getzen.ai/zen.js"
+  data-agent="zen-onboarding"
+  data-key="pk_live_9f2c..."&gt;
+&lt;/script&gt;</code></pre>
+          <p class="hv-note">One tag. No customer download required.</p>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ USE CASES ============ -->
+<section class="section usecases" id="use-cases">
+  <div class="wrap reveal">
+    <span class="eyebrow center"><i>•</i> Use cases</span>
+    <h2 class="display md center">What Zen can take off<br />your team's plate.</h2>
+
+    <div class="tabs" data-tabs="uc">
+      <button class="tab is-active" data-tab="0">Product setup</button>
+      <button class="tab" data-tab="1">Integrations</button>
+      <button class="tab" data-tab="2">Implementation</button>
+      <button class="tab" data-tab="3">Product training</button>
+    </div>
+
+    <div class="tab-panels">
+      <div class="tab-panel is-active" data-tabpanel="0">
+        <div class="uc-item"><span class="num">01</span><div><h3>Guide every customer through initial setup.</h3><p>Zen runs live setup sessions for every customer, 24/7. It sees their screen, walks them through configuration step by step, and keeps them moving until they're fully set up.</p></div></div>
+        <div class="uc-item"><span class="num">02</span><div><h3>Handle multi-step, multi-app workflows.</h3><p>Zen's overlay travels with customers across your app and the tools they connect to it. Complex cross-app setup becomes self-service, with no CS call required.</p></div></div>
+        <div class="uc-item"><span class="num">03</span><div><h3>Onboard in any timezone, any time.</h3><p>Every customer gets set up the moment they're ready, in their language, in their timezone. No scheduling delays, no waiting for business hours, no coverage gaps.</p></div></div>
+        <div class="uc-item"><span class="num">04</span><div><h3>Reduce time to first value.</h3><p>Customers who complete setup immediately are far more likely to stay. Zen closes the gap between sign-up and first value without any team intervention.</p></div></div>
+      </div>
+      <div class="tab-panel" data-tabpanel="1">
+        <div class="uc-item"><span class="num">01</span><div><h3>Connect the tools customers already use.</h3><p>Zen walks customers through OAuth screens, API keys and field mapping in third-party tools — without your engineers on the call.</p></div></div>
+        <div class="uc-item"><span class="num">02</span><div><h3>Fix broken syncs before they churn.</h3><p>When a connection fails, Zen reads the error, explains it in plain language and walks the customer to the fix.</p></div></div>
+        <div class="uc-item"><span class="num">03</span><div><h3>Map data the right way, first time.</h3><p>Zen validates each mapping against your schema so bad data never lands in production.</p></div></div>
+        <div class="uc-item"><span class="num">04</span><div><h3>Report what integrations customers actually want.</h3><p>Every unsupported request is logged and summarised for your product team.</p></div></div>
+      </div>
+      <div class="tab-panel" data-tabpanel="2">
+        <div class="uc-item"><span class="num">01</span><div><h3>Run structured implementation projects.</h3><p>Zen tracks milestones across weeks, chases owners and keeps the plan current without a project manager.</p></div></div>
+        <div class="uc-item"><span class="num">02</span><div><h3>Migrate legacy data safely.</h3><p>Zen guides customers through exports, template formatting and dry-run imports, catching errors before they commit.</p></div></div>
+        <div class="uc-item"><span class="num">03</span><div><h3>Keep stakeholders aligned.</h3><p>Automatic status summaries after every session, sent to the account owner and the customer's champion.</p></div></div>
+        <div class="uc-item"><span class="num">04</span><div><h3>Escalate the 5% that needs a human.</h3><p>Your solutions team only joins for the genuinely complex decisions — with full context already gathered.</p></div></div>
+      </div>
+      <div class="tab-panel" data-tabpanel="3">
+        <div class="uc-item"><span class="num">01</span><div><h3>Train every end user, not just the buyer.</h3><p>Zen runs an on-demand session for each new seat, so knowledge doesn't stop at the champion.</p></div></div>
+        <div class="uc-item"><span class="num">02</span><div><h3>Refresh training after every release.</h3><p>Update the knowledge base and Zen teaches the new flow from the next session onward.</p></div></div>
+        <div class="uc-item"><span class="num">03</span><div><h3>Certify readiness.</h3><p>Zen checks understanding with short in-product tasks and reports who is actually ready to go live.</p></div></div>
+        <div class="uc-item"><span class="num">04</span><div><h3>Cut repeat support tickets.</h3><p>The same "how do I…" question gets answered in-product, in context, at the moment it comes up.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE STUDIES ============ -->
+<section class="section cases">
+  <div class="wrap reveal">
+    <span class="eyebrow"><i>•</i> Case studies</span>
+    <div class="case-viewport">
+      <article class="case is-active" data-case="0">
+        <div class="case-logo">Gorgias</div>
+        <p class="case-kicker">Conversational AI Platform for Ecommerce</p>
+        <p class="case-body">Accelerates onboarding for ecommerce merchants, handling platform and channel connections, support rules, and AI agent training.</p>
+        <div class="case-metrics"><div><b>2.4x</b><span>faster activation</span></div><div><b>-61%</b><span>setup tickets</span></div><div><b>4.8/5</b><span>session rating</span></div></div>
+      </article>
+      <article class="case" data-case="1">
+        <div class="case-logo">Uptick</div>
+        <p class="case-kicker">Field Service Management</p>
+        <p class="case-body">Zen onboards technicians across four countries in their own language, walking each one through mobile setup and their first job completion.</p>
+        <div class="case-metrics"><div><b>1,900</b><span>techs onboarded</span></div><div><b>0</b><span>scheduled calls</span></div><div><b>11 days</b><span>saved per rollout</span></div></div>
+      </article>
+      <article class="case" data-case="2">
+        <div class="case-logo">Budgetly</div>
+        <p class="case-kicker">Corporate Spend Management</p>
+        <p class="case-body">Card issuing, accounting sync and approval policies configured by the customer, with Zen watching the screen and correcting mistakes live.</p>
+        <div class="case-metrics"><div><b>3 days</b><span>to first value</span></div><div><b>+34%</b><span>activation rate</span></div><div><b>24/7</b><span>coverage</span></div></div>
+      </article>
+    </div>
+    <div class="case-nav">
+      <button class="round" data-case-prev aria-label="Previous">←</button>
+      <button class="round" data-case-next aria-label="Next">→</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section faq" id="faq">
+  <div class="wrap reveal">
+    <span class="eyebrow center"><i>•</i> FAQ's</span>
+    <h2 class="display md center">Frequently asked<br />questions.</h2>
+    <div class="accordion faq-acc" data-accordion="faq">
+      <div class="acc-item" data-panel="0"><button class="acc-btn">How long does it take to set up?</button><div class="acc-body"><p>Most teams are live within a week. You upload your existing docs and videos, outline your onboarding milestones, run a few test scenarios, and launch.</p></div></div>
+      <div class="acc-item" data-panel="1"><button class="acc-btn">Do my customers need to download anything?</button><div class="acc-body"><p>No. Zen runs in the browser. Customers click a link or the in-app widget and the session starts immediately.</p></div></div>
+      <div class="acc-item" data-panel="2"><button class="acc-btn">How does Zen see the screen?</button><div class="acc-body"><p>The customer explicitly starts screen sharing and can stop at any time. Zen reads the shared view only for the duration of the session, and sensitive fields are masked before anything is stored.</p></div></div>
+      <div class="acc-item" data-panel="3"><button class="acc-btn">What kinds of products work with Zen?</button><div class="acc-body"><p>Any web-based product. Zen is especially strong for multi-step configuration, integrations and data migration flows.</p></div></div>
+      <div class="acc-item" data-panel="4"><button class="acc-btn">Is my customer data secure?</button><div class="acc-body"><p>Zen is SOC 2 Type 2 aligned, encrypts data in transit and at rest, and never uses your customer data to train foundation models. Human-in-the-loop review is available on every session.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta" id="book">
+  <div class="wrap reveal">
+    <h2 class="display md center">High-touch onboarding<br />for every customer.<br /><span class="accent">No extra headcount.</span></h2>
+    <p class="lede center narrow">See how Zen could handle your existing onboarding process.</p>
+    <form class="email-form center" data-demo-form>
+      <input type="email" placeholder="Your work email" aria-label="Your work email" required />
+      <button class="btn btn-primary" type="submit">Get a demo</button>
+      <p class="form-note" hidden>Thanks — we'll be in touch within one business day.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="fcol">
+      <span class="fhead">Product</span>
+      <a href="demo.html">Onboarding Agent</a>
+      <a href="#insights">Lifecycle Agent</a>
+      <a href="dashboard.html">Admin Hub</a>
+      <a href="#book">Pricing</a>
+    </div>
+    <div class="fcol">
+      <span class="fhead">Use Cases</span>
+      <a href="#use-cases">For Customer Success</a>
+      <a href="#use-cases">For Product</a>
+      <a href="#use-cases">For Founders</a>
+      <a href="#use-cases">For Support</a>
+    </div>
+    <div class="fcol">
+      <span class="fhead">Company</span>
+      <a href="#">Blog</a>
+      <a href="#faq">Trust &amp; Security</a>
+      <a href="#">Privacy policy</a>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+    <div class="fcol">
+      <span class="fhead">Connect</span>
+      <a href="#book">Get a demo</a>
+      <a href="mailto:team@getzen.ai">team@getzen.ai</a>
+      <a href="#">LinkedIn</a>
+    </div>
+    <div class="fcol trust">
+      <div class="soc">SOC 2<br /><b>Type 2</b></div>
+      <span class="fhead">Built for Trust</span>
+      <span class="tline">✓ SOC 2 Compliant</span>
+      <span class="tline">✓ User in Control</span>
+      <span class="tline">✓ No LLM Training</span>
+      <span class="tline">✓ Human-in-the-Loop</span>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <a class="logo" href="index.html" aria-label="Zen home">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+      <span class="logo-word">Zen</span>
+    </a>
+    <span>© 2026 Zen. All rights reserved.</span>
+    <span>Designed and built for the hackathon 🚀</span>
+  </div>
+</footer>
+
+<!-- ============ FLOATING AGENT ============ -->
+<button class="zen-launcher" id="zenLauncher" aria-label="Chat with Zen">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+  <span class="pulse"></span>
+</button>
+
+<div class="zen-chat" id="zenChat" hidden>
+  <div class="zc-head">
+    <span class="zc-title"><svg class="logo-mark sm" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg> Zen <em class="online">online</em></span>
+    <button class="zc-close" id="zcClose" aria-label="Close">✕</button>
+  </div>
+  <div class="zc-body" id="zcBody"></div>
+  <div class="zc-foot">
+    <input id="zcInput" placeholder="Ask Zen anything…" aria-label="Message Zen" />
+    <button id="zcSend" aria-label="Send">→</button>
+  </div>
+</div>
+
+<!-- video modal -->
+<div class="modal" id="videoModal" hidden>
+  <div class="modal-inner">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-video">
+      <video id="heroVideo" src="DAE18E88-528B-49BA-A5B7-10494D9E3418.mov" controls playsinline></video>
+      <div class="video-missing" id="videoMissing" hidden>
+        <p><b>Walkthrough video not included in this repo.</b></p>
+        <p>Jump straight into the interactive session instead.</p>
+        <a class="btn btn-primary" href="demo.html">Open the live demo</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

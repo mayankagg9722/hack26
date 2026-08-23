@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Hub — Zen</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="hub-body">
+
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav is-active" href="#">◫ Overview</a>
+    <a class="hub-nav" href="#customers">☰ Customers</a>
+    <a class="hub-nav" href="#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="#sessions">▶ Sessions</a>
+    <a class="hub-nav" href="#">📚 Knowledge</a>
+    <a class="hub-nav" href="#">⚙ Agent settings</a>
+    <div class="hub-side-note">
+      <b>Zen is live</b>
+      <span>Running 3 sessions right now</span>
+    </div>
+  </aside>
+
+  <main class="hub-main">
+    <header class="hub-head">
+      <div>
+        <h1>Good morning, Tanya</h1>
+        <p>Zen ran <b>47 sessions</b> in the last 7 days and escalated <b>4</b> to your team.</p>
+      </div>
+      <div class="hub-filters">
+        <button class="chip is-active">7 days</button>
+        <button class="chip">30 days</button>
+        <button class="chip">Quarter</button>
+      </div>
+    </header>
+
+    <section class="hub-kpis">
+      <div class="hub-kpi"><span>Sessions completed</span><b>47</b><em class="up">▲ 18% vs last week</em></div>
+      <div class="hub-kpi"><span>Avg. time to value</span><b>2.4 days</b><em class="up">▲ 2.1x faster</em></div>
+      <div class="hub-kpi"><span>Self-serve rate</span><b>91%</b><em class="up">▲ 6 pts</em></div>
+      <div class="hub-kpi"><span>Escalations</span><b>4</b><em class="down">▼ 3 vs last week</em></div>
+    </section>
+
+    <section class="hub-grid">
+      <article class="hub-card wide" id="customers">
+        <div class="hub-card-head"><h2>Customer onboarding progress</h2><span class="hub-link">Export CSV</span></div>
+        <table class="hub-table">
+          <thead><tr><th>Customer</th><th>Plan</th><th>Progress</th><th>Last session</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="cav n1">NG</span> Northwind Group</td><td>Enterprise</td><td><span class="bar"><i style="width:100%"></i></span></td><td>2h ago</td><td><em class="ok">Live</em></td></tr>
+            <tr><td><span class="cav n2">CL</span> Cerby Labs</td><td>Growth</td><td><span class="bar"><i style="width:64%"></i></span></td><td>Yesterday</td><td><em>In progress</em></td></tr>
+            <tr class="is-risk"><td><span class="cav n3">UF</span> Uptick Field</td><td>Growth</td><td><span class="bar"><i style="width:31%"></i></span></td><td>4 days ago</td><td><em class="warn">Stuck</em></td></tr>
+            <tr><td><span class="cav n4">BG</span> Budgetly</td><td>Starter</td><td><span class="bar"><i style="width:78%"></i></span></td><td>6h ago</td><td><em>In progress</em></td></tr>
+            <tr><td><span class="cav n5">QA</span> Qualia Health</td><td>Enterprise</td><td><span class="bar"><i style="width:88%"></i></span></td><td>1h ago</td><td><em>In progress</em></td></tr>
+            <tr class="is-risk"><td><span class="cav n6">CB</span> Canibuild</td><td>Growth</td><td><span class="bar"><i style="width:12%"></i></span></td><td>9 days ago</td><td><em class="bad">At risk</em></td></tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="hub-card" id="blockers">
+        <div class="hub-card-head"><h2>Needs a human</h2><span class="pill-count">4</span></div>
+        <div class="blocker">
+          <div class="bl-top"><b>Uptick Field</b><span>4 days ago</span></div>
+          <p>"Can we get SSO on the Growth plan?" — commercial question, outside Zen's scope.</p>
+          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
+        </div>
+        <div class="blocker">
+          <div class="bl-top"><b>Canibuild</b><span>9 days ago</span></div>
+          <p>Data import failed 3 times — malformed CSV from their legacy system.</p>
+          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
+        </div>
+        <div class="blocker">
+          <div class="bl-top"><b>Cerby Labs</b><span>Yesterday</span></div>
+          <p>Asked for a custom invoice template — not covered in the knowledge base.</p>
+          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
+        </div>
+        <div class="blocker">
+          <div class="bl-top"><b>Budgetly</b><span>6h ago</span></div>
+          <p>Multi-region tax setup — Zen flagged low confidence and paused.</p>
+          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
+        </div>
+      </article>
+
+      <article class="hub-card" id="sessions">
+        <div class="hub-card-head"><h2>Live &amp; recent sessions</h2></div>
+        <div class="sess live">
+          <span class="sdot"></span>
+          <div><b>Qualia Health · Dr. Amara O.</b><span>Connecting Google Calendar · 3:41 elapsed</span></div>
+          <a class="mini ghost" href="demo.html">Watch</a>
+        </div>
+        <div class="sess live">
+          <span class="sdot"></span>
+          <div><b>Northwind Group · Front desk</b><span>Staff training · 1:12 elapsed</span></div>
+          <a class="mini ghost" href="demo.html">Watch</a>
+        </div>
+        <div class="sess"><span class="sdot done"></span><div><b>Budgetly · Tom R.</b><span>Completed · 5 of 5 steps · 4:12</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
+        <div class="sess"><span class="sdot done"></span><div><b>Cerby Labs · Ana P.</b><span>Completed · 4 of 5 steps · 7:38</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
+        <div class="sess"><span class="sdot warn"></span><div><b>Uptick Field · Marc D.</b><span>Abandoned at "Sync CRM" · 2:04</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
+      </article>
+
+      <article class="hub-card wide">
+        <div class="hub-card-head"><h2>Where customers get stuck</h2><span class="hub-link">Last 30 days</span></div>
+        <div class="funnel">
+          <div class="fstep"><span>Create workspace</span><div class="fbar"><i style="width:100%"></i></div><b>100%</b></div>
+          <div class="fstep"><span>Import data</span><div class="fbar"><i style="width:94%"></i></div><b>94%</b></div>
+          <div class="fstep"><span>Connect integrations</span><div class="fbar"><i style="width:71%"></i></div><b>71%</b></div>
+          <div class="fstep drop"><span>Sync CRM</span><div class="fbar"><i style="width:46%"></i></div><b>46%</b></div>
+          <div class="fstep"><span>Invite team</span><div class="fbar"><i style="width:41%"></i></div><b>41%</b></div>
+        </div>
+        <div class="insight-note" style="margin-top:16px">
+          <span class="in-icon">◎</span>
+          <p><b>Zen's read:</b> the biggest drop is at <b>Sync CRM</b> — 12 of 26 customers couldn't find their provider in the list. Promoting the top 6 CRM logos would likely recover ~20% of this step.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.chip').forEach(function (c) {
+  c.addEventListener('click', function () {
+    document.querySelectorAll('.chip').forEach(function (x) { x.classList.remove('is-active'); });
+    c.classList.add('is-active');
+  });
+});
+document.querySelectorAll('.blocker .mini:not(.ghost)').forEach(function (b) {
+  b.addEventListener('click', function () {
+    b.textContent = 'Assigned to you ✓';
+    b.disabled = true;
+    b.classList.add('assigned');
+  });
+});
+</script>
+</body>
+</html>

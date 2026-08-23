@@ -1,0 +1,11 @@
+# demo recordings — kept local, too large for the repo
+*.mov
+*.mp4
+
+# tooling artifacts
+.playwright-mcp/
+*.png
+
+# os
+Thumbs.db
+.DS_Store

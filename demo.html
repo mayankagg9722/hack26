@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live session — Zen guiding a customer</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="demo-body">
+
+<!-- thin demo bar -->
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Live session</span>
+  <div class="demo-bar-right">
+    <button class="btn btn-ghost sm" id="restart">Restart</button>
+    <a class="btn btn-ghost sm" href="dashboard.html">Admin Hub</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+  </div>
+</div>
+
+<!-- ===== fake customer product ===== -->
+<div class="fake-app">
+  <aside class="fa-side">
+    <div class="fa-brand"><span class="fa-logo">Z</span> Zenith Health</div>
+    <nav>
+      <a class="fa-nav" data-step-target="nav-dash">◫ Dashboard</a>
+      <a class="fa-nav" data-step-target="nav-patients">☺ Patients</a>
+      <a class="fa-nav" data-step-target="nav-calendar">▤ Calendar</a>
+      <a class="fa-nav is-active" data-step-target="nav-integrations">⚯ Integrations</a>
+      <a class="fa-nav" data-step-target="nav-billing">$ Billing</a>
+      <a class="fa-nav" data-step-target="nav-settings">⚙ Settings</a>
+    </nav>
+    <div class="fa-side-foot">
+      <div class="fa-progress">
+        <span>Setup progress</span>
+        <div class="fa-bar"><i id="setupBar" style="width:20%"></i></div>
+        <em id="setupPct">1 of 5 steps</em>
+      </div>
+      <div class="fa-user"><span class="fa-av">JD</span><div><b>John Doe</b><span>Northwind Group</span></div></div>
+    </div>
+  </aside>
+
+  <main class="fa-main">
+    <header class="fa-head">
+      <div>
+        <h1>Integrations</h1>
+        <p>Connect the tools your clinic already uses.</p>
+      </div>
+      <button class="fa-btn-ghost" data-step-target="help">Need help?</button>
+    </header>
+
+    <section class="fa-grid">
+      <article class="fa-card" data-step-target="quickbooks">
+        <div class="fa-card-top"><span class="fa-icon qb">QB</span><b>QuickBooks</b></div>
+        <p>Sync invoices and payments to your accounting ledger.</p>
+        <button class="fa-connect" data-connect="quickbooks">Connect</button>
+      </article>
+      <article class="fa-card" data-step-target="xero">
+        <div class="fa-card-top"><span class="fa-icon xe">XE</span><b>Xero</b></div>
+        <p>Push daily takings into Xero automatically.</p>
+        <button class="fa-connect" data-connect="xero">Connect</button>
+      </article>
+      <article class="fa-card" data-step-target="gcal">
+        <div class="fa-card-top"><span class="fa-icon gc">GC</span><b>Google Calendar</b></div>
+        <p>Two-way sync for practitioner availability.</p>
+        <button class="fa-connect" data-connect="gcal">Connect</button>
+      </article>
+      <article class="fa-card" data-step-target="stripe">
+        <div class="fa-card-top"><span class="fa-icon st">ST</span><b>Stripe</b></div>
+        <p>Take card payments at the front desk and online.</p>
+        <button class="fa-connect" data-connect="stripe">Connect</button>
+      </article>
+      <article class="fa-card" data-step-target="twilio">
+        <div class="fa-card-top"><span class="fa-icon tw">TW</span><b>Twilio SMS</b></div>
+        <p>Appointment reminders by text message.</p>
+        <button class="fa-connect" data-connect="twilio">Connect</button>
+      </article>
+      <article class="fa-card" data-step-target="hl7">
+        <div class="fa-card-top"><span class="fa-icon hl">HL</span><b>HL7 / FHIR</b></div>
+        <p>Exchange clinical records with hospital systems.</p>
+        <button class="fa-connect" data-connect="hl7">Connect</button>
+      </article>
+    </section>
+
+    <!-- mapping panel appears mid-flow -->
+    <section class="fa-mapping" id="mappingPanel" hidden>
+      <h2>Map your accounts</h2>
+      <p class="fa-muted">Match Zenith fields to your QuickBooks chart of accounts.</p>
+      <div class="map-row"><span>Consultation revenue</span><select data-step-target="map1"><option>Select account…</option><option selected>4000 · Services Income</option><option>4100 · Product Sales</option></select></div>
+      <div class="map-row"><span>Product sales</span><select><option>Select account…</option><option selected>4100 · Product Sales</option></select></div>
+      <div class="map-row"><span>Tax code</span><select data-step-target="map2"><option>Select code…</option><option selected>GST-FREE</option><option>GST 10%</option></select></div>
+      <button class="fa-btn-primary" data-step-target="finish" data-action="finish">Save mapping &amp; finish</button>
+    </section>
+  </main>
+</div>
+
+<!-- ===== Zen overlay ===== -->
+<div class="spotlight" id="spotlight" hidden></div>
+<div class="coach" id="coach" hidden>
+  <div class="coach-head"><svg class="logo-mark sm" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg> Zen</div>
+  <p id="coachText"></p>
+</div>
+
+<aside class="zen-panel" id="zenPanel">
+  <div class="zp-head">
+    <span class="zp-title"><svg class="logo-mark sm" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg> Zen <em class="online">session live</em></span>
+    <span class="zp-timer" id="zpTimer">00:00</span>
+  </div>
+
+  <div class="zp-video">
+    <div class="zp-avatar">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="52" r="22" fill="#C79BF0"/>
+        <path d="M14 120c0-26 20-46 46-46s46 20 46 46z" fill="#A05FE0"/>
+      </svg>
+      <span class="live-tag"><span class="live-dot"></span> Zen</span>
+      <span class="share-tag">🖥 Screen shared</span>
+    </div>
+    <div class="zp-controls"><span class="pill">En ⌄</span><span class="pill">🎙 On</span><span class="pill">🖥 Sharing</span><span class="pill" id="escalateBtn">📞 Human</span></div>
+  </div>
+
+  <div class="zp-plan">
+    <span class="zp-plan-title">Session plan</span>
+    <ul id="planList">
+      <li data-plan="0"><span class="tick idle"></span> Understand the goal</li>
+      <li data-plan="1"><span class="tick idle"></span> Find the right integration</li>
+      <li data-plan="2"><span class="tick idle"></span> Authorise the connection</li>
+      <li data-plan="3"><span class="tick idle"></span> Map accounts &amp; tax</li>
+      <li data-plan="4"><span class="tick idle"></span> Confirm first sync</li>
+    </ul>
+  </div>
+
+  <div class="zp-body" id="zpBody"></div>
+  <div class="zp-foot">
+    <input id="zpInput" placeholder="Type to Zen…" aria-label="Message Zen" />
+    <button id="zpSend" aria-label="Send">→</button>
+  </div>
+</aside>
+
+<!-- OAuth-style modal for the connect step -->
+<div class="oauth" id="oauth" hidden>
+  <div class="oauth-card">
+    <div class="oauth-head"><span class="fa-icon qb">QB</span><b>Authorise Zenith Health</b></div>
+    <p>Zenith Health is requesting access to your QuickBooks company file.</p>
+    <ul class="oauth-scopes"><li>✓ Read chart of accounts</li><li>✓ Create invoices &amp; payments</li><li>✓ Read tax codes</li></ul>
+    <div class="oauth-actions">
+      <button class="fa-btn-ghost" id="oauthCancel">Cancel</button>
+      <button class="fa-btn-primary" id="oauthAllow" data-step-target="allow">Authorise</button>
+    </div>
+  </div>
+</div>
+
+<!-- completion card -->
+<div class="done-card" id="doneCard" hidden>
+  <span class="done-check">✓</span>
+  <h2>Setup complete</h2>
+  <p>QuickBooks is connected and your first sync finished in 41 seconds. Zen logged the session and sent a summary to your account team.</p>
+  <div class="done-stats"><div><b>4:12</b><span>session length</span></div><div><b>5/5</b><span>steps completed</span></div><div><b>0</b><span>human handoffs</span></div></div>
+  <div class="done-actions">
+    <a class="btn btn-primary" href="dashboard.html">See it in the Admin Hub</a>
+    <button class="btn btn-ghost" id="replay">Replay session</button>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

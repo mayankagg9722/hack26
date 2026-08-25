@@ -5,6 +5,7 @@
 # tooling artifacts
 .playwright-mcp/
 *.png
+.firebase/
 
 # os
 Thumbs.db

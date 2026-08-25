@@ -1,0 +1,17 @@
+[debug] [2026-08-25T04:45:54.096Z] ----------------------------------------------------------------------
+[debug] [2026-08-25T04:45:54.099Z] Command:       C:\Program Files\nodejs\node.exe Q:\.tools\.npm-global\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-08-25T04:45:54.099Z] CLI Version:   15.27.1-chkuang-connect-to.0
+[debug] [2026-08-25T04:45:54.100Z] Platform:      win32
+[debug] [2026-08-25T04:45:54.100Z] Node Version:  v22.17.1
+[debug] [2026-08-25T04:45:54.100Z] Detected Agent: github_copilot_vscode_agent
+[debug] [2026-08-25T04:45:54.101Z] Time:          Tue Aug 25 2026 10:15:54 GMT+0530 (India Standard Time)
+[debug] [2026-08-25T04:45:54.101Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-25T04:45:56.218Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-25T04:45:56.219Z] > authorizing via signed-in user (mayankagg9722@gmail.com)
+[debug] [2026-08-25T04:45:56.219Z] [iam] checking project zenhack-b4bf6 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-08-25T04:45:56.237Z] Checked if tokens are valid: true, expires at: 1787636550011
+[debug] [2026-08-25T04:45:56.237Z] Checked if tokens are valid: true, expires at: 1787636550011
+[debug] [2026-08-25T04:45:56.239Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/zenhack-b4bf6:testIamPermissions [none]
+[debug] [2026-08-25T04:45:56.239Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/zenhack-b4bf6:testIamPermissions  x-goog-user-project=zenhack-b4bf6
+[debug] [2026-08-25T04:45:56.239Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/zenhack-b4bf6:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}

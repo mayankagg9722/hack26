@@ -1,20 +1,34 @@
 {
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "*.mov",
-      "*.mp4",
-      "devpost/**"
-    ],
-    "cleanUrls": true,
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "site": "zenai",
+      "public": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/.git/**",
+        "**/.firebase/**",
+        "**/node_modules/**",
+        "*.mov",
+        "*.mp4",
+        "devpost/**"
+      ],
+      "cleanUrls": true
+    },
+    {
+      "site": "zenhack-b4bf6",
+      "public": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/.git/**",
+        "**/.firebase/**",
+        "**/node_modules/**",
+        "*.mov",
+        "*.mp4",
+        "devpost/**"
+      ],
+      "cleanUrls": true
+    }
+  ]
 }

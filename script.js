@@ -106,30 +106,8 @@
   }, { threshold: 0.5 });
   document.querySelectorAll('[data-count]').forEach(function (el) { statObserver.observe(el); });
 
-  /* ---------- video modal ---------- */
-  var modal = document.getElementById('videoModal');
-  var videoCard = document.getElementById('videoCard');
-  var guideMe = document.getElementById('guideMe');
-  var closeModal = function () {
-    if (!modal) return;
-    modal.hidden = true;
-    var v = modal.querySelector('video');
-    if (v) v.pause();
-  };
-  if (videoCard) videoCard.addEventListener('click', function () { modal.hidden = false; });
-  var heroVideo = document.getElementById('heroVideo');
-  if (heroVideo) {
-    heroVideo.addEventListener('error', function () {
-      heroVideo.hidden = true;
-      document.getElementById('videoMissing').hidden = false;
-    });
-  }
-  var mc = document.getElementById('modalClose');
-  if (mc) mc.addEventListener('click', closeModal);
-  if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
-
   /* "Guide me" jumps into the live product demo */
+  var guideMe = document.getElementById('guideMe');
   if (guideMe) guideMe.addEventListener('click', function () { window.location.href = 'demo.html'; });
 
   /* ---------- floating Zen chat (scripted) ---------- */

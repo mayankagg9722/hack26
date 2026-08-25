@@ -16,6 +16,7 @@
   var doneCard = document.getElementById('doneCard');
 
   var step = 0;
+  var navRedirecting = false;
 
   /* ---------- helpers ---------- */
   function el(cls, html) {
@@ -211,11 +212,14 @@
 
   document.querySelectorAll('.fa-nav').forEach(function (nav) {
     nav.addEventListener('click', function () {
+      if (nav.classList.contains('is-active') || navRedirecting) return;
+      navRedirecting = true;
       document.querySelectorAll('.fa-nav').forEach(function (n) { n.classList.remove('is-active'); });
       nav.classList.add('is-active');
       say('We\'re mid-way through the integration — I\'ll bring you back to <b>Integrations</b> so we don\'t lose progress.', 800, function () {
         document.querySelectorAll('.fa-nav').forEach(function (n) { n.classList.remove('is-active'); });
         document.querySelector('[data-step-target="nav-integrations"]').classList.add('is-active');
+        navRedirecting = false;
       });
     });
   });

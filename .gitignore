@@ -6,6 +6,7 @@
 .playwright-mcp/
 *.png
 .firebase/
+node_modules/
 
 # os
 Thumbs.db

@@ -1,4 +1,4 @@
-/* Zen live-session demo — fully scripted, no backend. */
+/* Zen live-session demo — scripted onboarding steps; free-text chat → Claude. */
 (function () {
   'use strict';
 
@@ -230,20 +230,48 @@
     say('On it. I\'m handing you to <b>Tanya Goel</b>, your onboarding lead, with the full transcript and your 3 completed steps attached. She\'ll join in under 2 minutes.', 1000);
   });
 
-  /* free text */
+  /* free text → Claude (scripted onboarding steps above stay unchanged) */
+  var CLAUDE_FALLBACK = 'I\'m having trouble reaching my AI brain right now. Follow the highlighted step on screen, or try asking again in a moment.';
+
+  function askClaude(message, onReply) {
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: message,
+        context: { page: 'demo', step: String(step) }
+      })
+    })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function (result) {
+        var reply = result.data && result.data.reply;
+        if (!reply) throw new Error('empty');
+        onReply(reply);
+      })
+      .catch(function () {
+        onReply(CLAUDE_FALLBACK);
+      });
+  }
+
   function handleTyped() {
     var text = input.value.trim();
     if (!text) return;
     user(text.replace(/</g, '&lt;'));
     input.value = '';
-    var t = text.toLowerCase();
-    var reply = 'Good question. In production I\'d answer from your own help docs. For now, follow the highlighted step and I\'ll keep guiding you.';
-    if (t.indexOf('tax') > -1 || t.indexOf('gst') > -1) reply = 'Health consultations in Australia are <b>GST-FREE</b>. Product sales still attract GST 10% — I\'ve split them for you.';
-    else if (t.indexOf('safe') > -1 || t.indexOf('secur') > -1 || t.indexOf('password') > -1) reply = 'You authorise inside QuickBooks itself. Zenith receives a revocable token — never your password.';
-    else if (t.indexOf('stuck') > -1 || t.indexOf('help') > -1) reply = 'No stress. Look for the purple highlight on screen — that\'s exactly where to click next.';
-    else if (t.indexOf('human') > -1 || t.indexOf('person') > -1) reply = 'I can bring in Tanya, your onboarding lead, right now. Hit <b>Human</b> in the controls above.';
-    else if (t.indexOf('xero') > -1) reply = 'Xero works the same way — once QuickBooks is done I can walk you through switching or adding it.';
-    say(reply, 900);
+
+    var typingEl = el('typing', '<i></i><i></i><i></i>');
+    body.appendChild(typingEl);
+    scroll();
+
+    askClaude(text, function (reply) {
+      typingEl.remove();
+      body.appendChild(el('bubble bot', reply));
+      scroll();
+    });
   }
   send.addEventListener('click', handleTyped);
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') handleTyped(); });

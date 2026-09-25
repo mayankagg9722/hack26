@@ -48,6 +48,12 @@
 .hub-table .ok{background:#E7F7EE;color:#12A150}
 .hub-table .warn{background:#FEF3C7;color:#B45309}
 .hub-table .bad{background:#FDECEC;color:#E5484D}
+.hub-table .sched{background:#EAF1FF;color:#2B6BFF}
+.hub-table a.goal-link{font-weight:700;color:#000}
+.hub-table a.goal-link:hover{color:var(--purple)}
+.hub-table .goal-sub{display:block;font-size:11.5px;color:var(--grey-light)}
+.goal-empty{font-size:13.5px;color:var(--grey)}
+.goal-empty a{color:var(--purple);font-weight:700}
 
 .blocker{border:1px solid var(--line);border-left:3px solid #FDBA35;border-radius:var(--r);padding:12px;margin-bottom:10px}
 .bl-top{display:flex;justify-content:space-between;align-items:center;font-size:13.5px}

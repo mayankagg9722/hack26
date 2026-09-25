@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Field mapping — Zen</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="integrations.css" />
+<link rel="stylesheet" href="mapping.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="hub-body">
+
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav" href="dashboard.html">◫ Overview</a>
+    <a class="hub-nav" href="dashboard.html#customers">☰ Customers</a>
+    <a class="hub-nav" href="dashboard.html#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="dashboard.html#sessions">▶ Sessions</a>
+    <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
+    <a class="hub-nav is-active" href="mapping.html">⇆ Field mapping</a>
+    <a class="hub-nav" href="planner.html">◎ Goal planner</a>
+    <a class="hub-nav" href="#">📚 Knowledge</a>
+    <a class="hub-nav" href="#">⚙ Agent settings</a>
+  </aside>
+
+  <main class="hub-main">
+    <header class="hub-head">
+      <div>
+        <h1>Field mapping</h1>
+        <p>Zen suggests how source fields map to the target and which workspace each record belongs in. Review, then save. Approved mappings are reused the next time this source and target are paired.</p>
+      </div>
+      <div class="map-pair">
+        <label>Source <select id="sourceSelect"></select></label>
+        <span aria-hidden="true">→</span>
+        <label>Target <select id="targetSelect"></select></label>
+      </div>
+    </header>
+
+    <div class="int-alert" id="mapAlert" hidden></div>
+
+    <section class="hub-card map-bar" id="mapBar" hidden>
+      <div class="map-bar-status">
+        <em class="int-badge" id="mapBadge">—</em>
+        <span id="mapSummary"></span>
+      </div>
+      <div class="map-bar-actions">
+        <button class="mini ghost" id="acceptHigh">Accept all ≥ 80%</button>
+        <button class="mini ghost" id="rerun">Re-run suggestions</button>
+        <button class="mini ghost" id="forget" hidden>Forget saved mapping</button>
+        <button class="mini" id="save">Save mapping</button>
+      </div>
+    </section>
+
+    <article class="hub-card map-fields" id="fieldsCard" hidden>
+      <div class="hub-card-head"><h2>Source → Target fields</h2><span class="int-count" id="fieldCount"></span></div>
+      <div class="int-table-wrap">
+        <table class="hub-table map-table">
+          <thead><tr><th>Source field</th><th></th><th>Target field</th><th>Zen suggestion</th><th>Decision</th><th></th></tr></thead>
+          <tbody id="fieldRows"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <section class="map-lower" id="lowerGrid" hidden>
+      <article class="hub-card">
+        <div class="hub-card-head"><h2>Workspace classification</h2><span class="int-count" id="deptFieldNote"></span></div>
+        <p class="int-note">Zen routes each record to a Freshservice workspace from its department. Change a row to override the rule; overrides are saved with the mapping.</p>
+        <div class="map-dist" id="distribution"></div>
+        <div class="int-table-wrap">
+          <table class="hub-table map-ws-table">
+            <thead><tr><th>Department</th><th>Records</th><th>Workspace</th><th>Why</th></tr></thead>
+            <tbody id="deptRows"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="hub-card">
+        <div class="hub-card-head">
+          <h2>Record walkthrough</h2>
+          <div class="map-nav">
+            <button class="mini ghost" id="prevRec" aria-label="Previous record">‹</button>
+            <span id="recPos">—</span>
+            <button class="mini ghost" id="nextRec" aria-label="Next record">›</button>
+          </div>
+        </div>
+        <div class="walk" id="walk"></div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<script src="mapping.js"></script>
+</body>
+</html>

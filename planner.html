@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Goal planner — Zen</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="integrations.css" />
+<link rel="stylesheet" href="mapping.css" />
+<link rel="stylesheet" href="planner.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="hub-body">
+
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav" href="dashboard.html">◫ Overview</a>
+    <a class="hub-nav" href="dashboard.html#customers">☰ Customers</a>
+    <a class="hub-nav" href="dashboard.html#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="dashboard.html#sessions">▶ Sessions</a>
+    <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
+    <a class="hub-nav" href="mapping.html">⇆ Field mapping</a>
+    <a class="hub-nav is-active" href="planner.html">◎ Goal planner</a>
+    <a class="hub-nav" href="#">📚 Knowledge</a>
+    <a class="hub-nav" href="#">⚙ Agent settings</a>
+  </aside>
+
+  <main class="hub-main">
+    <header class="hub-head">
+      <div>
+        <h1>Goal planner</h1>
+        <p>Tell Zen what to migrate, when, in what order and under what conditions. Zen turns it into a migration strategy you review and approve before anything is scheduled.</p>
+      </div>
+    </header>
+
+    <section class="pl-top">
+      <article class="hub-card pl-compose">
+        <div class="hub-card-head"><h2>Migration goal</h2><span class="int-count" id="tzNote"></span></div>
+        <textarea id="goalText" rows="4" placeholder="e.g. Migrate all employee and ticket records from Jira Service Management to Freshservice, starting with IT this Saturday at 11 PM…"></textarea>
+        <div class="pl-examples" id="examples"></div>
+        <div class="pl-compose-foot">
+          <span class="int-note" id="composeNote">Zen reads your goal, then builds waves, a schedule, dependencies, success criteria and an execution policy.</span>
+          <button class="btn btn-primary sm" id="planBtn">Plan with Zen</button>
+        </div>
+      </article>
+
+      <article class="hub-card pl-goals">
+        <div class="hub-card-head"><h2>Saved goals</h2><span class="int-count" id="goalCount"></span></div>
+        <div id="goalList" class="pl-goal-list"><p class="int-note">Loading…</p></div>
+      </article>
+    </section>
+
+    <div class="int-alert" id="plAlert" hidden></div>
+
+    <section id="plan" hidden>
+      <article class="hub-card pl-head">
+        <div class="pl-head-top">
+          <div>
+            <div class="pl-title-row"><h2 id="gTitle"></h2><em class="int-badge" id="gStatus"></em><span class="map-method" id="gMethod"></span></div>
+            <p class="pl-quote" id="gQuote"></p>
+          </div>
+          <div class="pl-actions">
+            <button class="mini ghost" id="deleteBtn">Delete</button>
+            <button class="mini ghost" id="precheckAllBtn" hidden>Run pre-checks</button>
+            <button class="mini ghost" id="saveBtn" hidden>Save changes</button>
+            <button class="mini ghost" id="approveBtn" hidden>Approve &amp; schedule</button>
+            <button class="mini" id="runBtn" hidden>Approve &amp; run migration</button>
+          </div>
+        </div>
+        <div class="pl-facts" id="gFacts"></div>
+        <div id="gMessages"></div>
+      </article>
+
+      <article class="hub-card run-card" id="runCard" hidden></article>
+
+      <article class="hub-card pl-reco" id="gReco" hidden></article>
+
+      <section class="pl-grid">
+        <article class="hub-card pl-waves">
+          <div class="hub-card-head"><h2>Migration strategy</h2><span class="int-count" id="chain"></span></div>
+          <div id="waves"></div>
+          <div class="pl-add-wave">
+            <select id="addWaveWs" aria-label="Workspace for new wave"></select>
+            <button class="mini ghost" id="addWaveBtn">+ Add wave</button>
+          </div>
+        </article>
+
+        <div class="pl-side">
+          <article class="hub-card">
+            <div class="hub-card-head"><h2>Success criteria</h2></div>
+            <p class="pl-formula" id="formula"></p>
+            <div class="pl-form" id="criteria"></div>
+          </article>
+
+          <article class="hub-card">
+            <div class="hub-card-head"><h2>Window &amp; execution policy</h2></div>
+            <div class="pl-form" id="policy"></div>
+          </article>
+
+          <article class="hub-card">
+            <div class="hub-card-head"><h2>Blackout periods</h2><button class="mini ghost" id="addBlackout">+ Add</button></div>
+            <p class="int-note">Zen never schedules or runs a migration inside these periods (local time).</p>
+            <div id="blackouts"></div>
+          </article>
+        </div>
+      </section>
+
+      <article class="hub-card pl-config">
+        <div class="hub-card-head">
+          <h2>Structured configuration</h2>
+          <button class="mini ghost" id="toggleJson">Show JSON</button>
+        </div>
+        <p class="int-note">What the Migration Executor will consume. Stored as application state and available from <code>GET /api/goals/:id</code>.</p>
+        <pre id="configText"></pre>
+        <pre id="configJson" hidden></pre>
+      </article>
+    </section>
+  </main>
+</div>
+
+<script src="planner.js"></script>
+</body>
+</html>

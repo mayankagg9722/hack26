@@ -1,4 +1,4 @@
-/* Zen — prototype interactions. All data is hardcoded; no backend. */
+/* Zen — prototype interactions. Free-text chat goes through /api/chat → Claude. */
 (function () {
   'use strict';
 
@@ -209,20 +209,49 @@
   });
   document.getElementById('zcClose').addEventListener('click', function () { chat.hidden = true; });
 
+  var CLAUDE_FALLBACK = 'I\'m having trouble reaching my AI brain right now. Please try again in a moment, or use the quick options below.';
+
+  var askClaude = function (message, onReply) {
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: message,
+        context: { page: 'landing', step: 'chat' }
+      })
+    })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function (result) {
+        var reply = result.data && result.data.reply;
+        if (!reply) throw new Error('empty');
+        onReply(reply);
+      })
+      .catch(function () {
+        onReply(CLAUDE_FALLBACK);
+      });
+  };
+
   var handleTyped = function () {
     var text = input.value.trim();
     if (!text) return;
     body.appendChild(el('bubble user', text.replace(/</g, '&lt;')));
     input.value = '';
     scroll();
-    var t = text.toLowerCase();
-    var reply = 'Great question. In the full product I\'d read your knowledge base and answer with your own docs. For this prototype, try one of the quick options below.';
-    if (t.indexOf('price') > -1 || t.indexOf('cost') > -1) reply = 'Plans start at <b>$1,200/mo</b> for 250 guided sessions, then scale per session.';
-    else if (t.indexOf('secur') > -1 || t.indexOf('soc') > -1) reply = 'SOC 2 Type 2 aligned, encrypted in transit and at rest, and your data is never used to train foundation models.';
-    else if (t.indexOf('demo') > -1) reply = 'Let\'s do it — hit <b>Show me a live session</b> and I\'ll guide you through a real setup flow.';
-    else if (t.indexOf('language') > -1) reply = 'I run sessions in 30+ languages, 24/7, with no scheduling.';
-    say(reply, 900);
-    choices(mainMenu(), 2000);
+
+    var typingEl = el('typing', '<i></i><i></i><i></i>');
+    body.appendChild(typingEl);
+    scroll();
+
+    askClaude(text, function (reply) {
+      typingEl.remove();
+      body.appendChild(el('bubble bot', reply));
+      scroll();
+      choices(mainMenu(), 1200);
+    });
   };
   send.addEventListener('click', handleTyped);
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') handleTyped(); });

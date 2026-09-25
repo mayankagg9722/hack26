@@ -8,6 +8,21 @@
 .firebase/
 node_modules/
 
+# secrets and local environment — never commit API keys
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+serviceAccount*.json
+**/service-account*.json
+.runtimeconfig.json
+functions/.env
+functions/.secret.local
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+
 # os
 Thumbs.db
 .DS_Store

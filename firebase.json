@@ -1,4 +1,17 @@
 {
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
   "hosting": [
     {
       "site": "zenai",
@@ -11,9 +24,52 @@
         "**/node_modules/**",
         "*.mov",
         "*.mp4",
-        "devpost/**"
+        "devpost/**",
+        "functions/**"
       ],
-      "cleanUrls": true
+      "cleanUrls": true,
+      "rewrites": [
+        {
+          "source": "/api/chat",
+          "function": "chatWithClaude"
+        },
+        {
+          "source": "/api/integrations",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/integrations/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/migration/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/mapping",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/mapping/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/goals",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/goals/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/runs",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/runs/**",
+          "function": "integrationsApi"
+        }
+      ]
     },
     {
       "site": "zenhack-b4bf6",
@@ -26,9 +82,52 @@
         "**/node_modules/**",
         "*.mov",
         "*.mp4",
-        "devpost/**"
+        "devpost/**",
+        "functions/**"
       ],
-      "cleanUrls": true
+      "cleanUrls": true,
+      "rewrites": [
+        {
+          "source": "/api/chat",
+          "function": "chatWithClaude"
+        },
+        {
+          "source": "/api/integrations",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/integrations/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/migration/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/mapping",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/mapping/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/goals",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/goals/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/runs",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/runs/**",
+          "function": "integrationsApi"
+        }
+      ]
     }
   ]
 }

@@ -14,6 +14,17 @@ const SYNONYMS = {
   closed: ["closed", "cancelled", "canceled", "rejected"],
   incident: ["incident", "problem", "bug", "outage", "fault"],
   servicerequest: ["servicerequest", "request", "change", "task", "question", "access"],
+  // departments (source spellings seen across ITSM exports)
+  it: ["it", "itoperations", "informationtechnology", "itops"],
+  hr: ["hr", "humanresources", "peopleculture", "peopleandculture"],
+  finance: ["finance", "fin", "accounts", "accounting"],
+  facilities: ["facilities", "fac", "workplaceservices", "workplace"],
+  engineering: ["engineering", "eng"],
+  sales: ["sales"],
+  marketing: ["marketing", "mktg"],
+  legal: ["legal"],
+  customersupport: ["customersupport", "support"],
+  procurement: ["procurement", "proc", "purchasing"],
 };
 
 function norm(v) {
@@ -99,4 +110,4 @@ function getPath(obj, key) {
   return key.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
 }
 
-module.exports = { matchEnum, parseDate, transformRecord, getPath, setPath, norm };
+module.exports = { matchEnum, parseDate, transformRecord, getPath, setPath, norm, SYNONYMS };

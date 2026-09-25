@@ -59,6 +59,14 @@ class TargetAdapter {
     throw new NotImplementedError(this.constructor.name + ".readRecords");
   }
 
+  /**
+   * Find an existing requester (e.g. created by an earlier migration) by email.
+   * Default: not supported. @returns {Promise<{employee_id: string, name?: string}|null>}
+   */
+  async findRequesterByEmail(email) { // eslint-disable-line no-unused-vars
+    return null;
+  }
+
   /** Count records written by a run, optionally per workspace. @returns {Promise<number|null>} */
   async countRecords(filter) { // eslint-disable-line no-unused-vars
     throw new NotImplementedError(this.constructor.name + ".countRecords");

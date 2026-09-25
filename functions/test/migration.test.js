@@ -103,12 +103,12 @@ test("demo generator: realistic quality adds a few issues without changing the c
   const clean = generateDemoRecords({ profile: "legacy-itsm", count: 750, seed: 42, quality: "clean" });
   const real = generateDemoRecords({ profile: "legacy-itsm", count: 750, seed: 42 });
   const withIssue = real.filter((r) => r._issue);
-  assert.ok(withIssue.length > 20 && withIssue.length < 90, "about 6% have issues");
+  assert.ok(withIssue.length > 50 && withIssue.length < 120, "about 6% random issues plus ~5% controlled failures");
   assert.ok(real.slice(0, 25).every((r) => !r._issue), "head stays clean");
   assert.ok(!Object.keys(real[30]).includes("_issue"), "ground truth is not exposed");
   real.forEach((r, i) => {
     if (!r._issue) assert.deepEqual(r, clean[i]);
-    else assert.equal(r.department, clean[i].department, "departments (and so workspace counts) are unchanged");
+    else if (!r._issue.startsWith("controlled:invalid_department")) assert.equal(r.department, clean[i].department, "only controlled department failures change departments");
   });
 });
 

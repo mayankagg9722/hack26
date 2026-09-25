@@ -32,9 +32,9 @@ const TRANSITIONS = {
   VALIDATING: ["RECONCILING", "PAUSED", "FAILED", "HUMAN_REVIEW_REQUIRED"],
   RECONCILING: ["COMPLETED", "PAUSED", "FAILED", "HUMAN_REVIEW_REQUIRED"],
   COMPLETED: [],
-  PAUSED: ["PLANNED", "PRECHECK", "READY", "RUNNING", "FAILED"],
+  PAUSED: ["PLANNED", "PRECHECK", "READY", "RUNNING", "FAILED", "HUMAN_REVIEW_REQUIRED"],
   BLOCKED: ["PLANNED", "PRECHECK"],
-  HUMAN_REVIEW_REQUIRED: ["PLANNED", "PRECHECK", "RUNNING", "FAILED"],
+  HUMAN_REVIEW_REQUIRED: ["PLANNED", "PRECHECK", "RUNNING", "VALIDATING", "RECONCILING", "PAUSED", "FAILED"],
   FAILED: ["PLANNED"],
 };
 
@@ -139,7 +139,8 @@ function displayStatus(goal, wave) {
 function deriveGoalStatus(goal) {
   const states = goal.waves.map((w) => w.status);
   if (!states.length || states.every((s) => s === "DRAFT")) return "DRAFT";
-  if (states.every((s) => s === "COMPLETED")) return "COMPLETED";
+  // waves done but records still waiting for a human decision
+  if (states.every((s) => s === "COMPLETED")) return goal.pending_review_count > 0 ? "HUMAN_REVIEW_REQUIRED" : "COMPLETED";
   const active = states.find((s) => ACTIVE_STATES.includes(s));
   if (active) return active;
   for (const s of ["FAILED", "HUMAN_REVIEW_REQUIRED", "BLOCKED", "PAUSED"]) if (states.includes(s)) return s;

@@ -55,7 +55,7 @@ function validateRecord(raw, ctx) {
  * Check records read back from the target.
  * @returns {{checked: number, problems: Array<{id, message}>}}
  */
-function verifyTargetRecords(records, targetSchema, expectedWorkspaceId) {
+function verifyTargetRecords(records, targetSchema, expectedWorkspace) {
   const problems = [];
   for (const r of records) {
     for (const f of targetSchema) {
@@ -64,8 +64,10 @@ function verifyTargetRecords(records, targetSchema, expectedWorkspaceId) {
         if (v === undefined || v === null || v === "") problems.push({ id: r.id, message: f.label + " missing in target" });
       }
     }
-    if (expectedWorkspaceId != null && String(r.workspace_id) !== String(expectedWorkspaceId)) {
-      problems.push({ id: r.id, message: "Landed in workspace " + r.workspace_id + " instead of " + expectedWorkspaceId });
+    // expectedWorkspace: one workspace id for all records, or a map of record id → workspace id
+    const want = expectedWorkspace && typeof expectedWorkspace === "object" ? expectedWorkspace[String(r.id)] : expectedWorkspace;
+    if (want != null && String(r.workspace_id) !== String(want)) {
+      problems.push({ id: r.id, message: "Landed in workspace " + r.workspace_id + " instead of " + want });
     }
   }
   return { checked: records.length, problems };

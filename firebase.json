@@ -68,6 +68,21 @@
         {
           "source": "/api/runs/**",
           "function": "integrationsApi"
+        },
+        {
+          "source": "/api/demo/**",
+          "function": "integrationsApi"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
         }
       ]
     },
@@ -126,6 +141,21 @@
         {
           "source": "/api/runs/**",
           "function": "integrationsApi"
+        },
+        {
+          "source": "/api/demo/**",
+          "function": "integrationsApi"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
         }
       ]
     }

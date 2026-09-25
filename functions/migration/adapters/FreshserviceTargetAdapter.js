@@ -102,6 +102,17 @@ class FreshserviceTargetAdapter extends TargetAdapter {
     return out;
   }
 
+  /* GET /api/v2/requesters?email= — untested against a live account. */
+  async findRequesterByEmail(email) {
+    try {
+      const data = await this.request("/api/v2/requesters?email=" + encodeURIComponent(email));
+      const r = (data.requesters || [])[0];
+      return r && r.employee_id ? { employee_id: String(r.employee_id), name: [r.first_name, r.last_name].filter(Boolean).join(" ") } : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
   async countRecords() {
     return null; // Freshservice has no cheap filtered count; reconciliation uses readRecords
   }

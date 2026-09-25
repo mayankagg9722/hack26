@@ -4,13 +4,14 @@
    `expects` describes the kind of value, used by Zen's mapping suggestions. */
 
 const FRESHSERVICE_TICKET_FIELDS = [
-  { key: "requester.employee_id", label: "Employee ID", type: "string", expects: "id",
+  { key: "requester.employee_id", label: "Employee ID", type: "string", required: true, expects: "id",
     aliases: ["employee id", "employee number", "staff id", "requester id"] },
   { key: "requester.name", label: "Name", type: "string", expects: "person",
     aliases: ["employee name", "requester name", "full name"] },
   { key: "email", label: "Email", type: "email", required: true, expects: "email",
     aliases: ["requester email", "email address"] },
-  { key: "department", label: "Department", type: "reference", expects: "enum",
+  { key: "department", label: "Department", type: "enum", expects: "enum",
+    values: ["IT", "HR", "Finance", "Facilities", "Engineering", "Sales", "Marketing", "Legal", "Customer Support", "Procurement"],
     aliases: ["dept", "department name", "business unit"] },
   { key: "custom_fields.legacy_ticket_id", label: "Ticket ID", type: "string", expects: "id",
     aliases: ["ticket number", "incident number", "issue key", "ticket id"] },

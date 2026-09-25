@@ -18,11 +18,12 @@ const { JsonFileMappingStore } = require("../migration/mapping/store");
 const { JsonFileGoalStore } = require("../migration/goals/store");
 const { JsonFileRunStore } = require("../migration/execution/runStore");
 
-const END = ["COMPLETED", "HUMAN_REVIEW_REQUIRED", "BLOCKED", "PAUSED", "FAILED"];
+const END = ["COMPLETED", "HUMAN_REVIEW_REQUIRED", "BLOCKED", "PAUSED", "FAILED", "STOPPED"];
 const PRIORITY = SCHEMA.find((f) => f.key === "priority");
 const STATUS = SCHEMA.find((f) => f.key === "status");
 const TYPE = SCHEMA.find((f) => f.key === "type");
 const FIELDS = [
+  { sourceField: "emp", targetField: "requester.employee_id" },
   { sourceField: "mail", targetField: "email" },
   { sourceField: "desc", targetField: "description" },
   { sourceField: "prio", targetField: "priority" },
@@ -67,15 +68,22 @@ async function setup(api, { source = "jira", text, criteria } = {}) {
   return goal;
 }
 
-async function runToEnd(api, runId, now) {
+async function runToEnd(api, runId, now, { approveAtGate = false } = {}) {
   let run;
   let steps = 0;
   const phases = [];
-  do {
+  for (;;) {
     run = (await call(api, "POST", "/api/runs/" + runId + "/advance", { body: { now } })).body.run;
     if (phases[phases.length - 1] !== run.status) phases.push(run.status);
     steps++;
-  } while (!END.includes(run.status) && steps < 1000);
+    if (steps > 1000) break;
+    if (approveAtGate && run.status === "HUMAN_REVIEW_REQUIRED" && run.review_gate && run.review_gate.type === "final") {
+      run = (await call(api, "POST", "/api/runs/" + runId + "/review/apply", { body: { now } })).body.run;
+      phases.push("HUMAN_DECISIONS");
+      continue;
+    }
+    if (END.includes(run.status)) break;
+  }
   return { run, phases, steps };
 }
 
@@ -102,7 +110,7 @@ test("transform: enum synonyms, dates, emails", () => {
 
 test("validation + basic fixes: fixable vs needs review", () => {
   const ctx = { fields: FIELDS, targetSchema: SCHEMA, seenIds: new Set(["INC9"]) };
-  const good = { mail: "a@b.com", desc: "Broken", prio: "P2", state: "Open", id: "INC1", created: "2025-01-01T00:00:00Z" };
+  const good = { emp: "E1", mail: "a@b.com", desc: "Broken", prio: "P2", state: "Open", id: "INC1", created: "2025-01-01T00:00:00Z" };
   assert.deepEqual(validateRecord(good, ctx).filter((i) => i.severity === "error"), []);
 
   const fixable = { ...good, mail: "ana.p at corp.com", prio: "PRIORITY: HIGH", created: "25/09/2025 14:03" };
@@ -121,7 +129,7 @@ test("validation + basic fixes: fixable vs needs review", () => {
 
 test("mock target: validates like the API, retries, reads back, counts", async () => {
   const t = new MockFreshserviceTargetAdapter({ id: "freshservice", name: "Freshservice" }, { file: path.join(DATA, "t.json"), latencyMs: 0 });
-  const ok = { email: "a@b.com", subject: "S", description: "D", priority: 2, status: 2, workspace_id: "it", custom_fields: { legacy_ticket_id: "X1" } };
+  const ok = { email: "a@b.com", subject: "S", description: "D", priority: 2, status: 2, workspace_id: "it", requester: { employee_id: "E1" }, custom_fields: { legacy_ticket_id: "X1" } };
   const [a, b] = await t.writeRecords([ok, { ...ok, email: "nope", custom_fields: { legacy_ticket_id: "X2" } }], { runId: "r1" });
   assert.equal(a.ok, true);
   assert.equal(b.ok, false);
@@ -129,13 +137,19 @@ test("mock target: validates like the API, retries, reads back, counts", async (
   assert.match(b.error.message, /email/);
   assert.equal((await t.readRecords([a.id]))[0].email, "a@b.com");
   assert.equal(await t.countRecords({ runId: "r1", workspaceId: "it" }), 1);
-  // transient 429s: some first attempts fail retryably, never second attempts
-  const many = Array.from({ length: 300 }, (_, i) => ({ ...ok, custom_fields: { legacy_ticket_id: "T" + i } }));
-  const first = await t.writeRecords(many, { runId: "r2", attempt: 1 });
-  const transient = first.filter((r) => !r.ok);
-  assert.ok(transient.length > 0 && transient.every((r) => r.error.code === "429" && r.error.retryable));
-  const second = await t.writeRecords(many.filter((_, i) => !first[i].ok), { runId: "r2", attempt: 2 });
-  assert.ok(second.every((r) => r.ok));
+  // deterministic API failures: 429 fails once, 503 twice, 500 always
+  const many = Array.from({ length: 4000 }, (_, i) => ({ ...ok, custom_fields: { legacy_ticket_id: "T" + i } }));
+  const codesAt = async (attempt) => (await t.writeRecords(many, { runId: "r2", attempt })).map((r) => (r.ok ? "ok" : r.error.code));
+  const [a1, a2, a3, a4] = [await codesAt(1), await codesAt(2), await codesAt(3), await codesAt(4)];
+  for (const code of ["429", "503", "500"]) assert.ok(a1.includes(code), code + " occurs");
+  a1.forEach((c, i) => {
+    if (c === "429") assert.deepEqual([a2[i], a3[i]], ["ok", "ok"]);
+    if (c === "503") assert.deepEqual([a2[i], a3[i]], ["503", "ok"]);
+    if (c === "500") assert.deepEqual([a2[i], a3[i], a4[i]], ["500", "500", "ok"], "outlasts automatic retries, clears later");
+  });
+  assert.deepEqual(await codesAt(1), a1, "same records fail the same way every run");
+  const noEmp = await t.writeRecords([{ ...ok, requester: {}, custom_fields: { legacy_ticket_id: "X9" } }], { runId: "r3" });
+  assert.match(noEmp[0].error.message, /employee_id/);
 });
 
 /* ---------- full flow ---------- */
@@ -148,20 +162,26 @@ test("executor: goal → plan → execute → COMPLETED, with real counts and re
   assert.equal(start.status, 200, JSON.stringify(start.body));
   assert.equal(start.body.run.status, "VALIDATING");
 
-  const { run, phases } = await runToEnd(api, start.body.run.run_id, now);
+  const { run, phases } = await runToEnd(api, start.body.run.run_id, now, { approveAtGate: true });
   assert.equal(run.status, "COMPLETED", run.status_reason);
+  assert.ok(phases.includes("HUMAN_DECISIONS"), "paused for human review before completing");
   for (const p of ["VALIDATING", "MAPPING", "MIGRATING", "VALIDATING_TARGET", "RECONCILING", "COMPLETED"]) assert.ok(phases.includes(p), p);
 
   const t = run.totals;
   assert.equal(t.processed, t.expected, "every in-scope record processed");
   assert.equal(t.processed, t.successful + t.failed);
-  assert.equal(t.failed, t.remediated + t.human_review);
-  assert.ok(t.remediated > 0 && t.human_review > 0, "dirty demo data exercises fixes and review");
-  assert.equal(run.review_queue_count, t.human_review);
+  assert.ok(t.remediated > 0 && t.human_resolved > 0, "dirty demo data exercises auto-fixes and human decisions");
+  assert.equal(run.failures_count, t.failed);
+  assert.equal(t.failed, t.remediated + t.human_review + t.human_resolved + t.skipped);
+  assert.equal(t.human_review, 0, "nothing left waiting");
+  assert.equal(run.remediation.detected, t.failed);
+  assert.equal(run.remediation.resolved, t.remediated);
+  assert.equal(run.remediation.pending, 0);
+  assert.ok(phases.includes("REMEDIATING"));
   for (const w of Object.values(run.waves)) {
     assert.equal(w.phase, "COMPLETED");
     assert.equal(w.reconciliation.match, true);
-    assert.equal(w.reconciliation.target_count, w.counts.successful + w.counts.remediated);
+    assert.equal(w.reconciliation.target_count, w.counts.successful + w.counts.remediated + w.counts.human_resolved);
     assert.ok(w.evaluation.met);
   }
 
@@ -221,7 +241,7 @@ test("executor: blackout needs an explicit override; pause and resume keep posit
   assert.equal(run.totals.processed, before, "paused runs don't advance");
   run = (await call(api, "POST", "/api/runs/" + id + "/resume", { body: { now: monday } })).body.run;
   assert.equal(run.status, "MIGRATING");
-  const end = await runToEnd(api, id, monday);
+  const end = await runToEnd(api, id, monday, { approveAtGate: true });
   assert.equal(end.run.status, "COMPLETED");
   assert.equal(end.run.totals.processed, end.run.totals.expected, "no record skipped or repeated across pause");
   const g = (await call(api, "GET", "/api/goals/" + goal.goal_id)).body.goal;

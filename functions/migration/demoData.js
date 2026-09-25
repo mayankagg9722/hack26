@@ -193,6 +193,44 @@ const ISSUES = [
   { type: "duplicate_ticket", weight: 7 },    // needs review
 ];
 
+/* Controlled failures for the hackathon demo: fixed positions (every 20th
+   record from #27), cycling through these scenarios, so every run shows the
+   same failures. Some are safely fixable, some must go to a human. */
+const CONTROLLED_EVERY = 20;
+const CONTROLLED_OFFSET = 7;
+const CONTROLLED = [
+  "missing_employee_id",        // fixable: infer from the employee's other records (same email)
+  "missing_employee_id_new_hire",// not safe: no other record for this employee
+  "invalid_department_alias",   // fixable by rules: "Fin & Accts", "IT Dept.", "Facilties"
+  "invalid_department_semantic",// fixable by AI: "Infra & Networking" → IT
+  "invalid_department_garbage", // not safe: "???"
+  "field_mapping_mismatch",     // fixable: priority/type values landed in each other's columns
+  "missing_email",              // fixable: infer from the employee's other records
+  "missing_description",        // not safe: required, nothing to derive it from
+];
+const DEPT_ALIASES = ["Fin & Accts", "IT Dept.", "Facilties", "Human Res."];
+const DEPT_SEMANTIC = ["Infra & Networking", "Office Management", "Talent Acquisition", "Treasury Ops"];
+const DEPT_GARBAGE = ["???", "DEPT-000", "N/A"];
+
+function injectControlled(r, type, k, emailDomain) {
+  switch (type) {
+    case "missing_employee_id": r.employeeId = ""; break;
+    case "missing_employee_id_new_hire":
+      r.employeeId = "";
+      r.email = "new.hire" + (k + 1) + "@" + emailDomain;
+      r.employeeName = "New Hire " + (k + 1);
+      break;
+    case "invalid_department_alias": r.department = DEPT_ALIASES[k % DEPT_ALIASES.length]; break;
+    case "invalid_department_semantic": r.department = DEPT_SEMANTIC[k % DEPT_SEMANTIC.length]; break;
+    case "invalid_department_garbage": r.department = DEPT_GARBAGE[k % DEPT_GARBAGE.length]; break;
+    case "field_mapping_mismatch": { const t = r.priority; r.priority = r.ticketType; r.ticketType = t; break; }
+    case "missing_email": r.email = ""; break;
+    case "missing_description": r.description = ""; break;
+    default: break;
+  }
+  r._issue = "controlled:" + type;
+}
+
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
@@ -266,6 +304,14 @@ function generateDemoRecords({ profile = "mock-legacy", count = 750, seed = 42, 
       let acc = 0;
       const issue = ISSUES.find((x) => (acc += x.weight) >= which) || ISSUES[0];
       injectIssue(r, issue.type, issueRng, records[i - 1]);
+    });
+  }
+  if (quality === "realistic") {
+    let k = 0;
+    records.forEach((r, i) => {
+      if (i < CLEAN_HEAD || i % CONTROLLED_EVERY !== CONTROLLED_OFFSET) return;
+      injectControlled(r, CONTROLLED[k % CONTROLLED.length], Math.floor(k / CONTROLLED.length), p.emailDomain);
+      k++;
     });
   }
   // _issue is ground truth for tests only; strip it from what sources expose

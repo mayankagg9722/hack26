@@ -24,6 +24,7 @@ const { interpretWithClaude } = require("./goals/aiInterpreter");
 const { MigrationExecutor } = require("./execution/executor");
 const { JsonFileRunStore } = require("./execution/runStore");
 const { createRunRoutes } = require("./execution/routes");
+const { resolveDepartmentsWithClaude } = require("./execution/aiDepartments");
 
 const DECISIONS = new Set(["accepted", "modified", "rejected"]);
 
@@ -107,10 +108,11 @@ function activeFields(fields) {
  * @param {object} [deps.goalStore]  migration goal store (list/get/save/remove)
  * @param {Function|null} [deps.aiInterpret]  override the Claude goal interpreter (tests); null disables it
  * @param {object} [deps.runStore]  migration run store
+ * @param {Function|null} [deps.aiDepartments]  override the Claude department resolver (tests); null disables it
  */
 function createMigrationApi({
   getAnthropicKey = () => "", store = new JsonFileMappingStore(), aiSuggest,
-  goalStore = new JsonFileGoalStore(), aiInterpret, runStore = new JsonFileRunStore(),
+  goalStore = new JsonFileGoalStore(), aiInterpret, runStore = new JsonFileRunStore(), aiDepartments,
 } = {}) {
   function anthropicKey() {
     try { return getAnthropicKey() || ""; } catch (err) { return ""; }
@@ -136,6 +138,11 @@ function createMigrationApi({
     runStore,
     mappingStore: store,
     logger,
+    getAiDepartmentResolver: () => {
+      if (aiDepartments !== undefined) return aiDepartments;
+      const key = anthropicKey();
+      return key ? (args) => resolveDepartmentsWithClaude({ ...args, apiKey: key }) : null;
+    },
     engineFor: (goal) => new MigrationEngine({
       source: createSourceAdapter(goal.source.id, goal.source.demo || {}),
       target: createTargetAdapter(goal.target.id),
@@ -207,6 +214,17 @@ function createMigrationApi({
           res.json({ removed: await store.remove(params.source, params.target) });
           return;
         }
+      }
+
+      // demo only: clear the simulated target so every demo run starts identically
+      if (group === "demo" && id === "reset" && req.method === "POST") {
+        const target = createTargetAdapter(params.target || "freshservice");
+        if (!target || target.mode !== "mock" || typeof target.reset !== "function") {
+          res.status(409).json({ error: "Reset is only available for demo (mock) targets" });
+          return;
+        }
+        res.json({ cleared: await target.reset() });
+        return;
       }
 
       if (group === "runs" || (group === "goals" && action === "run")) {

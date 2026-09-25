@@ -28,10 +28,55 @@
   var showJson = false;
   var run = null;       // latest run summary for the open goal
   var polling = false;
-  var RUN_END = ['COMPLETED', 'HUMAN_REVIEW_REQUIRED', 'BLOCKED', 'PAUSED', 'FAILED'];
-  var RUN_STEPS = ['VALIDATING', 'MAPPING', 'MIGRATING', 'VALIDATING_TARGET', 'RECONCILING', 'COMPLETED'];
+  var RUN_END = ['COMPLETED', 'HUMAN_REVIEW_REQUIRED', 'BLOCKED', 'PAUSED', 'FAILED', 'STOPPED'];
+  var reviewOpen = {};    // group → records list expanded
+  var reviewInputs = {};  // failure_id → {sourceField: value}
+  var reviewErrors = {};  // failure_id → message
+  var reviewBusy = false;
+  var RUN_STEPS = ['VALIDATING', 'MAPPING', 'MIGRATING', 'REMEDIATING', 'VALIDATING_TARGET', 'RECONCILING', 'HUMAN_REVIEW', 'COMPLETED'];
+  var remOpen = false;        // AI Remediation panel expanded
+  var remFilter = 'HUMAN_REVIEW_REQUIRED';
+  var remDetail = null;       // failure_id with source/mapping shown
+  var STRATEGY_LABELS = {
+    normalize_format: 'Normalised data', swap_mismatched_fields: 'Corrected swapped fields', infer_employee_id: 'Inferred employee ID',
+    infer_email: 'Inferred email', normalize_department: 'Applied known department mapping', ai_department: 'AI department mapping',
+    retry_api: 'Retried API request'
+  };
 
   var $ = function (id) { return document.getElementById(id); };
+
+  // A browser holding an older copy of planner.html may lack newer containers — create them
+  (function ensureContainers() {
+    var anchor = document.getElementById('gReco') || document.getElementById('plan');
+    [['runCard', 'hub-card run-card'], ['reviewCard', 'hub-card review-card']].forEach(function (c) {
+      if (document.getElementById(c[0]) || !anchor) return;
+      var el = document.createElement('article');
+      el.id = c[0];
+      el.className = c[1];
+      el.hidden = true;
+      if (anchor.id === 'plan') anchor.insertBefore(el, anchor.children[1] || null);
+      else anchor.parentNode.insertBefore(el, anchor);
+    });
+    if (!document.getElementById('runBtn')) {
+      var approve = document.getElementById('approveBtn');
+      if (approve) {
+        var b = document.createElement('button');
+        b.className = 'mini';
+        b.id = 'runBtn';
+        b.hidden = true;
+        b.textContent = 'Approve & run migration';
+        approve.parentNode.appendChild(b);
+      }
+    }
+    // stylesheet for the newer panels
+    if (!document.querySelector('link[href^="planner.css?v=8"]')) {
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = 'planner.css?v=8';
+      document.head.appendChild(l);
+    }
+  })();
+
   var browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
   /* ---------- helpers ---------- */
@@ -257,6 +302,7 @@
   function loadRun(g) {
     var id = g.active_run_id || (g.runs && g.runs.length ? g.runs[g.runs.length - 1].run_id : null);
     $('runCard').hidden = true;
+    $('reviewCard').hidden = true;
     if (!id) return;
     api('GET', '/api/runs/' + encodeURIComponent(id)).then(function (res) {
       if (!goal || goal.goal_id !== g.goal_id) return;
@@ -270,7 +316,7 @@
   function startRun(override) {
     withSaved(function () {
       return api('POST', '/api/goals/' + encodeURIComponent(goal.goal_id) + '/run', { override_blackout: Boolean(override) })
-        .then(function (res) { run = res.run; renderRun(); render(); poll(); })
+        .then(function (res) { run = res.run; renderRun(); render(); poll(); refreshGoal(); })
         .catch(function (err) {
           if (/blackout/i.test(err.message) && window.confirm(err.message + '\n\nRun the migration anyway?')) return startRun(true);
           showAlert('Could not start the migration: ' + esc(err.message));
@@ -307,12 +353,179 @@
   }
 
   function runControl(action) {
+    if (action === 'stop' && !window.confirm('Stop the migration? Records already written stay in the target; nothing else will be written. You can retry later.')) return;
     api('POST', '/api/runs/' + encodeURIComponent(run.run_id) + '/' + action, {})
-      .then(function (res) { run = res.run; renderRun(); render(); if (action === 'resume') poll(); else refreshGoal(); })
+      .then(function (res) {
+        run = res.run;
+        renderRun(); render();
+        if (RUN_END.indexOf(run.status) === -1) poll(); else refreshGoal();
+      })
       .catch(function (err) { showAlert('Could not ' + action + ': ' + esc(err.message)); });
   }
 
+  /* ---------- human review actions ---------- */
+  function reviewCall(path, body) {
+    if (reviewBusy) return Promise.resolve();
+    reviewBusy = true;
+    renderReview();
+    return fetch(path + '?count=' + encodeURIComponent(conn.demo.count) + '&seed=' + encodeURIComponent(conn.demo.seed), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {})
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (data.run) run = data.run;
+        if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        return data;
+      });
+    }).finally(function () {
+      reviewBusy = false;
+      renderRun(); render();
+      if (run && RUN_END.indexOf(run.status) === -1) poll(); else if (goal) refreshGoal();
+    });
+  }
+  function approveRecord(fid) {
+    delete reviewErrors[fid];
+    reviewCall('/api/runs/' + encodeURIComponent(run.run_id) + '/review/' + encodeURIComponent(fid) + '/approve', { values: reviewInputs[fid] || {} })
+      .catch(function (err) { reviewErrors[fid] = err.message; renderReview(); });
+  }
+  function skipRecord(fid) {
+    reviewCall('/api/runs/' + encodeURIComponent(run.run_id) + '/review/' + encodeURIComponent(fid) + '/skip', {})
+      .catch(function (err) { showAlert('Could not skip: ' + esc(err.message)); });
+  }
+  function applyGroup(group, mode) {
+    var items = run.failures.filter(function (f) { return f.status === 'HUMAN_REVIEW_REQUIRED' && (!group || (f.recommendation && f.recommendation.group === group)); });
+    if (mode === 'skip') {
+      if (!window.confirm('Skip ' + items.length + ' record(s)? They will not be migrated.')) return;
+      var chain = Promise.resolve();
+      items.forEach(function (f) { chain = chain.then(function () { return reviewCall('/api/runs/' + encodeURIComponent(run.run_id) + '/review/' + encodeURIComponent(f.failure_id) + '/skip', {}); }); });
+      chain.catch(function (err) { showAlert('Could not skip: ' + esc(err.message)); });
+      return;
+    }
+    reviewCall('/api/runs/' + encodeURIComponent(run.run_id) + '/review/apply', { group: group || null })
+      .then(function (data) {
+        var o = data && data.outcome;
+        if (o && (o.failed.length || o.needs_input)) {
+          showAlert(o.approved + ' retried successfully, ' + o.skipped + ' skipped' + (o.failed.length ? ', ' + o.failed.length + ' still failing' : '') +
+            (o.needs_input ? ', ' + o.needs_input + ' need you to type a value' : '') + '.');
+        }
+      })
+      .catch(function (err) { showAlert('Could not apply recommendations: ' + esc(err.message)); });
+  }
+  function retryRun() {
+    api('POST', '/api/runs/' + encodeURIComponent(run.run_id) + '/retry', {})
+      .then(function (res) { run = res.run; renderRun(); render(); poll(); })
+      .catch(function (err) {
+        if (/blackout/i.test(err.message) && window.confirm(err.message + '\n\nRetry anyway?')) {
+          return api('POST', '/api/runs/' + encodeURIComponent(run.run_id) + '/retry', { override_blackout: true })
+            .then(function (res) { run = res.run; renderRun(); render(); poll(); });
+        }
+        showAlert('Could not retry: ' + esc(err.message));
+      });
+  }
+
+  function renderReview() {
+    var card = $('reviewCard');
+    var rv = run && run.review;
+    if (!rv || !rv.escalated) { card.hidden = true; return; }
+    card.hidden = false;
+    var awaiting = rv.awaiting;
+    var open = awaiting && run.review_gate;
+    var closed = ['COMPLETED', 'STOPPED', 'FAILED'].indexOf(run.status) > -1;
+    card.className = 'hub-card review-card' + (awaiting ? ' is-open' : ' is-done');
+    var stepList = function (attempts) {
+      return '<ol class="rv-tried">' + (attempts || []).filter(function (a) { return a.step !== 'Human-approved retry'; }).map(function (a) {
+        return '<li class="' + (a.ok ? 'ok' : '') + '"><b>' + esc(a.step) + '</b> — ' + esc(a.result) + '</li>';
+      }).join('') + '</ol>';
+    };
+    var groupsHtml = rv.groups.map(function (g) {
+      var expanded = reviewOpen[g.group];
+      var rec = g.recommendation || {};
+      var records = run.failures.filter(function (f) { return g.failure_ids.indexOf(f.failure_id) > -1; });
+      var rows = expanded ? records.map(function (f) {
+        var src = f.source || {};
+        var who = Object.keys(src).filter(function (k) { return /name|reporter$|full_name|employee_name/i.test(k); }).map(function (k) { return src[k]; })[0] || '';
+        var mail = Object.keys(src).filter(function (k) { return /mail/i.test(k); }).map(function (k) { return src[k]; })[0] || '';
+        var fr = f.recommendation || {};
+        var inputs = f.status === 'HUMAN_REVIEW_REQUIRED' && !closed ? (fr.changes || []).map(function (c) {
+          var cur = reviewInputs[f.failure_id] && reviewInputs[f.failure_id][c.field] != null ? reviewInputs[f.failure_id][c.field] : c.value;
+          return '<label class="rv-input"><span>' + esc(c.label) + '</span><input data-rv-input="' + esc(f.failure_id) + '" data-field="' + esc(c.field) + '" value="' + esc(cur) + '" placeholder="' + esc(c.hint) + '" title="' + esc(c.hint) + '"></label>';
+        }).join('') : '';
+        var state = f.status === 'RESOLVED' ? '<span class="rem-ok">✓ Approved by ' + esc(f.decision && f.decision.by) + ' — migrated as #' + esc(f.outcome && f.outcome.target_id) + '</span>'
+          : f.status === 'SKIPPED' ? '<span class="wave-muted">Skipped by ' + esc(f.decision && f.decision.by) + '</span>'
+            : f.status === 'DEFERRED' ? '<span class="wave-muted">Deferred — not migrated</span>' : '';
+        return '<div class="rv-record">' +
+          '<div class="rv-rec-id"><b>' + esc(f.record_id || f.failure_id) + '</b><small>' + esc(who) + (mail ? ' · ' + esc(mail) : '') + ' · ' + esc(run.waves[f.wave_id] ? run.waves[f.wave_id].name : '') + '</small></div>' +
+          '<div class="rv-rec-body">' + (inputs || state) + (reviewErrors[f.failure_id] ? '<p class="rv-error">' + esc(reviewErrors[f.failure_id]) + '</p>' : '') + '</div>' +
+          (f.status === 'HUMAN_REVIEW_REQUIRED' && !closed ? '<div class="rv-rec-actions"><button class="mini" data-rv-approve="' + esc(f.failure_id) + '"' + (reviewBusy ? ' disabled' : '') + '>Approve Retry</button>' +
+            '<button class="mini ghost" data-rv-skip="' + esc(f.failure_id) + '"' + (reviewBusy ? ' disabled' : '') + '>Skip Record</button></div>' : '') +
+        '</div>';
+      }).join('') : '';
+      return '<div class="rv-group' + (g.pending ? '' : ' done') + '">' +
+        '<div class="rv-group-head"><h3>' + esc(g.title) + '</h3><span class="rv-count">' + g.total + ' record' + (g.total > 1 ? 's' : '') + ' affected' +
+          (g.pending ? ' · <b>' + g.pending + ' pending</b>' : '') + (g.resolved ? ' · ' + g.resolved + ' approved' : '') + (g.skipped ? ' · ' + g.skipped + ' skipped' : '') + '</span></div>' +
+        '<div class="rv-grid">' +
+          '<div><h4>What failed</h4><p>' + esc(g.category) + ': ' + esc(g.what_failed) + '</p><h4>Why it failed</h4><p>' + esc(g.why || '—') + '</p></div>' +
+          '<div><h4>What Zen tried</h4>' + stepList(g.attempts) + '<p class="rv-result"><b>Result:</b> ' + (g.pending ? 'Unable to resolve safely.' : 'Decided by a human.') + '</p></div>' +
+          '<div><h4>What Zen recommends</h4><p class="rv-rec">' + esc(rec.summary || '—') + '</p>' +
+            (g.pending && !closed ? '<div class="rv-actions">' +
+              (rec.action === 'skip' ? '<button class="mini" data-rv-group-skip="' + esc(g.group) + '"' + (reviewBusy ? ' disabled' : '') + '>Skip ' + g.pending + ' record' + (g.pending > 1 ? 's' : '') + ' (recommended)</button>' +
+                '<button class="mini ghost" data-rv-open="' + esc(g.group) + '">Review individually</button>'
+                : '<button class="mini" data-rv-group="' + esc(g.group) + '"' + (reviewBusy || rec.needs_input ? ' disabled' : '') + '>Approve Retry (' + g.pending + ')</button>' +
+                '<button class="mini ghost" data-rv-group-skip="' + esc(g.group) + '"' + (reviewBusy ? ' disabled' : '') + '>Skip</button>') +
+            '</div>' + (rec.needs_input ? '<p class="wave-muted">Needs a value from you — open the records below.</p>' : '') : '') +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="rv-toggle" data-rv-open="' + esc(g.group) + '">' + (expanded ? 'Hide records ▲' : 'Show ' + g.total + ' record' + (g.total > 1 ? 's' : '') + ' ▼') + '</button>' +
+        (expanded ? '<div class="rv-records">' + rows + '</div>' : '') +
+      '</div>';
+    }).join('');
+
+    var st = rv.status;
+    card.innerHTML =
+      '<div class="rv-head"><div><h2>' + (awaiting ? '⚠ Human Review Required' : 'Human review — all exceptions decided') + '</h2>' +
+        '<p class="run-sub">' + (open ? 'Migration paused — waiting for your decision. Zen resumes automatically once every exception is decided.'
+          : awaiting && closed ? 'This run ended with open exceptions.' : awaiting ? 'Zen escalated these while the migration continues.' :
+            rv.human_resolved + ' approved, ' + rv.skipped + ' skipped' + (rv.deferred ? ', ' + rv.deferred + ' deferred' : '') + '.') + '</p></div>' +
+        (open ? '<div class="pl-actions"><button class="mini" id="rvApplyAll"' + (reviewBusy ? ' disabled' : '') + '>Approve all recommended</button>' +
+          '<button class="mini ghost" data-run="resume">Resume Migration</button><button class="mini ghost" data-run="stop">Stop Migration</button></div>' : '') +
+      '</div>' +
+      '<div class="rv-context">' +
+        '<div><span>Current migration status</span><b>' + esc(st.run_status.replace(/_/g, ' ').toLowerCase()) + '</b><small>' + esc(st.current_wave) + ' · ' + st.migrated.toLocaleString() + ' of ' + st.expected.toLocaleString() + ' migrated</small></div>' +
+        '<div><span>Records affected</span><b>' + rv.escalated + '</b><small>' + awaiting + ' awaiting a decision</small></div>' +
+        '<div><span>Success rate</span><b>' + rv.impact.success_rate_now + '%</b><small>' + (awaiting ? rv.impact.success_rate_if_approved + '% if the recommendations are approved' : 'final') + '</small></div>' +
+        '<div class="wide"><span>Impact on migration</span><p>' + esc(rv.impact.message) + '</p></div>' +
+      '</div>' +
+      '<div class="rv-groups">' + groupsHtml + '</div>';
+
+    card.querySelectorAll('[data-run]').forEach(function (b) { b.addEventListener('click', function () { runControl(b.getAttribute('data-run')); }); });
+    var all = $('rvApplyAll');
+    if (all) all.addEventListener('click', function () { applyGroup(null, 'approve'); });
+    card.querySelectorAll('[data-rv-open]').forEach(function (b) { b.addEventListener('click', function () { var g = b.getAttribute('data-rv-open'); reviewOpen[g] = !reviewOpen[g]; renderReview(); }); });
+    card.querySelectorAll('[data-rv-group]').forEach(function (b) { b.addEventListener('click', function () { applyGroup(b.getAttribute('data-rv-group'), 'approve'); }); });
+    card.querySelectorAll('[data-rv-group-skip]').forEach(function (b) { b.addEventListener('click', function () { applyGroup(b.getAttribute('data-rv-group-skip'), 'skip'); }); });
+    card.querySelectorAll('[data-rv-approve]').forEach(function (b) { b.addEventListener('click', function () { approveRecord(b.getAttribute('data-rv-approve')); }); });
+    card.querySelectorAll('[data-rv-skip]').forEach(function (b) { b.addEventListener('click', function () { skipRecord(b.getAttribute('data-rv-skip')); }); });
+    card.querySelectorAll('[data-rv-input]').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var fid = inp.getAttribute('data-rv-input');
+        reviewInputs[fid] = reviewInputs[fid] || {};
+        reviewInputs[fid][inp.getAttribute('data-field')] = inp.value;
+      });
+    });
+  }
+
   function renderRun() {
+    try {
+      drawRun();
+    } catch (err) {
+      // never leave the panel blank — show what went wrong instead
+      var card = $('runCard');
+      card.hidden = false;
+      card.innerHTML = '<p class="int-note">Could not display this migration run (' + esc(err.message) + '). Reload the page with Cmd+Shift+R.</p>';
+      if (window.console) console.error(err);
+    }
+  }
+
+  function drawRun() {
     var card = $('runCard');
     if (!run) { card.hidden = true; return; }
     card.hidden = false;
@@ -321,18 +534,20 @@
     var ended = RUN_END.indexOf(run.status) > -1;
     var wave = run.waves[run.current_wave_id];
     var idx = run.wave_order.indexOf(run.current_wave_id);
-    var title = { COMPLETED: 'Migration completed', HUMAN_REVIEW_REQUIRED: 'Migration stopped — human review required',
-      BLOCKED: 'Migration blocked', PAUSED: 'Migration paused', FAILED: 'Migration failed' }[run.status] || 'Migration in progress';
+    var title = { COMPLETED: 'Migration completed', HUMAN_REVIEW_REQUIRED: run.review_gate ? 'Migration paused — human review required' : 'Migration stopped — human review required',
+      BLOCKED: 'Migration blocked', PAUSED: 'Migration paused', FAILED: 'Migration failed', STOPPED: 'Migration stopped' }[run.status] || 'Migration in progress';
     card.className = 'hub-card run-card' + (run.status === 'COMPLETED' ? ' done' : (ended ? ' attn' : ''));
     var pct = t.expected ? Math.min(100, Math.round((t.processed / t.expected) * 100)) : 0;
     var stepIdx = RUN_STEPS.indexOf(wave.phase);
-    var stopped = ended && run.status !== 'COMPLETED';
+    if (run.status === 'HUMAN_REVIEW_REQUIRED' && run.review_gate && run.review_gate.type === 'final') stepIdx = RUN_STEPS.indexOf('HUMAN_REVIEW');
+    if (run.status === 'FINALIZING') stepIdx = RUN_STEPS.indexOf('HUMAN_REVIEW') + 1;
+    var stopped = ended && run.status !== 'COMPLETED' && !run.review_gate;
     var steps = RUN_STEPS.map(function (p, i) {
       var cls = '';
       if (run.status === 'COMPLETED' || i < stepIdx) cls = 'done';
       else if (i === stepIdx) cls = stopped ? 'stop' : 'now';
       if (stopped && stepIdx === -1 && i === 0) cls = 'stop';
-      return '<div class="run-step ' + cls + '">' + p.replace('_', ' ') + '</div>';
+      return '<div class="run-step ' + cls + '">' + p.replace(/_/g, ' ') + '</div>';
     }).join('');
     var time = function (iso) { return new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(iso)); };
 
@@ -352,7 +567,9 @@
         (run.status_reason && ended ? '<p class="run-sub">' + esc(run.status_reason) + '</p>' : '') + '</div>' +
         '<div class="pl-actions">' +
           (!ended && wave.phase === 'MIGRATING' ? '<button class="mini ghost" data-run="pause">Pause</button>' : '') +
-          (run.status === 'PAUSED' ? '<button class="mini" data-run="resume">Resume</button>' : '') +
+          (run.status === 'PAUSED' || run.review_gate ? '<button class="mini" data-run="resume">Resume</button>' : '') +
+          (['COMPLETED', 'STOPPED', 'FAILED'].indexOf(run.status) === -1 && run.status !== 'BLOCKED' ? '<button class="mini ghost" data-run="stop">Stop</button>' : '') +
+          (['STOPPED', 'FAILED', 'BLOCKED'].indexOf(run.status) > -1 && goal && goal.status !== 'COMPLETED' ? '<button class="mini" id="retryRunBtn">Retry</button>' : '') +
         '</div></div>' +
       '<div class="run-steps">' + steps + '</div>' +
       '<div class="run-wave">Wave ' + (idx + 1) + ' of ' + run.wave_order.length + ' — <b>' + esc(wave.name) + '</b>' +
@@ -365,24 +582,102 @@
         '<div class="run-tile fix"><span>Remediated</span><b>' + t.remediated.toLocaleString() + '</b></div>' +
         '<div class="run-tile rev"><span>Human review</span><b>' + t.human_review.toLocaleString() + '</b></div>' +
       '</div>' +
+      productStripHtml() +
       '<table class="hub-table run-table"><thead><tr><th>Wave</th><th>Phase</th><th>Processed</th><th>Successful</th><th>Remediated</th><th>Review</th><th>Success</th><th>Reconciliation</th></tr></thead><tbody>' + rows + '</tbody></table>' +
       '<div class="run-cols">' +
         '<div><h3>Activity</h3><div class="run-log">' + run.events.slice().reverse().map(function (e) {
           return '<div><time>' + esc(time(e.at)) + '</time><span class="' + esc(e.level) + '">' + esc(e.message) + '</span></div>';
         }).join('') + '</div></div>' +
-        '<div><h3>Human review queue (' + run.review_queue_count + ') · auto-fixes (' + run.remediations_count + ')</h3><div class="run-q">' +
-          run.review_queue.slice(0, 8).map(function (q) {
-            return '<div><b>' + esc(q.record || 'record') + '</b> · ' + esc(q.reason) + '</div>';
-          }).join('') +
-          run.remediations.slice(-5).reverse().map(function (r) {
-            return '<div class="fix"><b>' + esc(r.record || 'record') + '</b> · ' + esc(r.fixes.join('; ')) + '</div>';
-          }).join('') +
-          (!run.review_queue_count && !run.remediations_count ? '<p class="wave-muted">Nothing yet.</p>' : '') +
-        '</div></div>' +
-      '</div>';
+        '<div>' + remediationSummaryHtml() + '</div>' +
+      '</div>' + remediationDetailHtml();
     card.querySelectorAll('[data-run]').forEach(function (b) {
       b.addEventListener('click', function () { runControl(b.getAttribute('data-run')); });
     });
+    var retryBtn = card.querySelector('#retryRunBtn');
+    if (retryBtn) retryBtn.addEventListener('click', retryRun);
+    renderReview();
+    var sum = card.querySelector('[data-rem-toggle]');
+    if (sum) sum.addEventListener('click', function () { remOpen = !remOpen; renderRun(); });
+    card.querySelectorAll('[data-rem-filter]').forEach(function (b) {
+      b.addEventListener('click', function () { remFilter = b.getAttribute('data-rem-filter'); remDetail = null; renderRun(); });
+    });
+    card.querySelectorAll('[data-rem-detail]').forEach(function (b) {
+      b.addEventListener('click', function () { var id = b.getAttribute('data-rem-detail'); remDetail = remDetail === id ? null : id; renderRun(); });
+    });
+  }
+
+  function productStripHtml() {
+    var r = run.remediation;
+    var rv = run.review;
+    if (!r || !r.detected) return '';
+    return '<div class="split-strip">' +
+      '<div class="ai"><span>AI handles routine work</span><b>' + r.resolved + ' of ' + r.detected + '</b> failures fixed automatically by Zen' +
+        (r.ai_resolved ? ' (' + r.ai_resolved + ' with Claude)' : '') + '</div>' +
+      '<div class="human"><span>Human handles exceptions</span><b>' + (rv ? rv.escalated : r.human_review) + '</b> escalated · ' +
+        (rv && rv.awaiting ? '<b>' + rv.awaiting + ' need your decision</b>' : (rv ? rv.human_resolved + ' approved, ' + rv.skipped + ' skipped' : '')) + '</div>' +
+    '</div>';
+  }
+
+  function remediationSummaryHtml() {
+    var r = run.remediation || { detected: 0, resolved: 0, human_review: 0, pending: 0, ai_resolved: 0 };
+    if (!r.detected) return '<h3>AI Remediation</h3><p class="wave-muted">No failures detected yet.</p>';
+    return '<h3>AI Remediation</h3>' +
+      '<button type="button" class="rem-summary' + (remOpen ? ' open' : '') + '" data-rem-toggle aria-expanded="' + remOpen + '">' +
+        '<b>' + r.detected + ' failure' + (r.detected > 1 ? 's' : '') + ' detected</b>' +
+        '<span class="rem-ok">✓ ' + r.resolved + ' automatically resolved' + (r.ai_resolved ? ' <small>(' + r.ai_resolved + ' with AI)</small>' : '') + '</span>' +
+        '<span class="rem-warn">⚠ ' + r.human_review + ' require human review</span>' +
+        (r.pending ? '<span class="rem-pending">… ' + r.pending + ' being analysed</span>' : '') +
+        '<em>' + (remOpen ? 'Hide details ▲' : 'Show reasons ▼') + '</em>' +
+      '</button>' +
+      (r.ai_error ? '<p class="wave-muted">AI was unavailable (' + esc(r.ai_error) + '); records needing it went to human review.</p>' : '');
+  }
+
+  function remediationDetailHtml() {
+    var r = run.remediation;
+    if (!remOpen || !r || !r.detected) return '';
+    var cats = Object.keys(r.by_category).map(function (k) {
+      var c = r.by_category[k];
+      return '<tr><td>' + esc(c.label) + '</td><td>' + c.detected + '</td><td class="rem-ok">' + c.resolved + '</td><td class="rem-warn">' + c.human_review + '</td>' +
+        (c.pending ? '<td>' + c.pending + '</td>' : '<td>—</td>') + '</tr>';
+    }).join('');
+    var list = (run.failures || []).filter(function (f) { return remFilter === 'ALL' || f.status === remFilter; });
+    var rows = list.slice(0, 150).map(function (f) {
+      var rem = f.remediation || {};
+      var what = rem.strategies && rem.strategies.length
+        ? rem.strategies.filter(function (v, i, a) { return a.indexOf(v) === i; }).map(function (st) { return STRATEGY_LABELS[st] || st; }).join(', ')
+        : (f.status === 'OPEN' || f.status === 'REMEDIATING' ? 'Analysing…' : 'Not auto-fixable');
+      var changes = (rem.changes || []).filter(function (c) { return c.detail !== '' || c.strategy !== 'swap_mismatched_fields'; }).map(function (c) {
+        return '<div class="rem-change"><code>' + esc(c.field) + '</code> <s>' + esc(c.from === '' ? '(empty)' : c.from) + '</s> → <b>' + esc(c.to) + '</b>' +
+          (c.detail ? '<small>' + esc(c.detail) + '</small>' : '') + '</div>';
+      }).join('');
+      var outcome = f.status === 'RESOLVED'
+        ? '<span class="rem-ok">✓ Re-processed and written' + (f.outcome && f.outcome.target_id ? ' (#' + esc(f.outcome.target_id) + ')' : '') + '</span>' +
+          (rem.rerouted_to ? ' <small>→ re-routed to ' + esc(rem.rerouted_to) + '</small>' : '') +
+          (rem.method === 'ai' ? ' <span class="map-method ai">AI</span>' : '')
+        : f.status === 'HUMAN_REVIEW_REQUIRED' ? '<span class="rem-warn">⚠ ' + esc(f.review_reason || 'Needs review') + '</span>' : '<span class="wave-muted">Pending</span>';
+      var detail = remDetail === f.failure_id
+        ? '<tr class="rem-more"><td colspan="6"><div class="rem-grid"><div><h4>Source data</h4><dl class="kv">' + Object.keys(f.source).map(function (k) {
+            return '<dt>' + esc(k) + '</dt><dd>' + esc(f.source[k] === '' ? '(empty)' : f.source[k]) + '</dd>';
+          }).join('') + '</dl></div><div><h4>Target mapping</h4><div class="walk-map">' + f.target_mapping.map(function (m) {
+            return '<code>' + esc(m.sourceField) + '</code><i>→</i><b>' + esc(m.targetField) + '</b><span>' + esc(m.value === '' ? '(empty)' : m.value) + '</span>';
+          }).join('') + '</div><h4>Recommended action</h4><p>' + esc(f.recommended_action || '—') + '</p>' +
+          (f.write_error ? '<h4>Target error</h4><p>' + esc(f.write_error.code + ' ' + f.write_error.message) + '</p>' : '') +
+          '</div></div></td></tr>'
+        : '';
+      return '<tr class="rem-row" data-rem-detail="' + esc(f.failure_id) + '"><td><b>' + esc(f.record_id || f.failure_id) + '</b><small>' + esc(run.waves[f.wave_id] ? run.waves[f.wave_id].name : '') + '</small></td>' +
+        '<td>' + esc(f.category_label) + '</td><td class="rem-reason">' + esc(f.reason) + '</td>' +
+        '<td>' + esc(what) + changes + '</td><td>' + f.retry_count + '</td><td>' + outcome + '</td></tr>' + detail;
+    }).join('');
+    var count = function (st) { return (run.failures || []).filter(function (f) { return st === 'ALL' || f.status === st; }).length; };
+    return '<div class="rem-detail">' +
+      '<table class="hub-table rem-cats"><thead><tr><th>Error category</th><th>Detected</th><th>Resolved</th><th>Human review</th><th>Pending</th></tr></thead><tbody>' + cats + '</tbody></table>' +
+      '<div class="rem-filters">' + [['HUMAN_REVIEW_REQUIRED', 'Human review'], ['RESOLVED', 'Automatically resolved'], ['ALL', 'All failures']].map(function (x) {
+        return '<button type="button" class="chip' + (remFilter === x[0] ? ' is-active' : '') + '" data-rem-filter="' + x[0] + '">' + x[1] + ' (' + count(x[0]) + ')</button>';
+      }).join('') + '<span class="wave-muted">Click a row for source data and mapping.</span></div>' +
+      '<div class="int-table-wrap"><table class="hub-table rem-table"><thead><tr><th>Record</th><th>Category</th><th>Failure reason</th><th>Remediation</th><th>Retries</th><th>Result</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="6" class="wave-muted">None.</td></tr>') + '</tbody></table></div>' +
+      (list.length > 150 ? '<p class="wave-muted">Showing 150 of ' + list.length + '.</p>' : '') +
+    '</div>';
   }
 
   /* ---------- render ---------- */
@@ -397,7 +692,7 @@
     $('gQuote').textContent = '“' + draft.goal_description + '”';
     $('approveBtn').hidden = Boolean(goal.approved_at);
     var runActive = run && RUN_END.indexOf(run.status) === -1;
-    $('runBtn').hidden = goal.status === 'COMPLETED' || runActive || (run && run.status === 'PAUSED');
+    $('runBtn').hidden = goal.status === 'COMPLETED' || runActive || (run && (run.status === 'PAUSED' || run.review_gate));
     $('runBtn').textContent = goal.approved_at ? 'Run migration now' : 'Approve & run migration';
     $('precheckAllBtn').hidden = !goal.approved_at;
 
@@ -759,6 +1054,13 @@
   });
   $('precheckAllBtn').addEventListener('click', function () { precheck(null); });
   $('deleteBtn').addEventListener('click', removeGoal);
+  var resetBtn = $('resetDemo');
+  if (resetBtn) resetBtn.addEventListener('click', function () {
+    if (!window.confirm('Reset demo data? This empties the simulated Freshservice so the next demo run starts fresh (108 failures → 88 auto-fixed → 20 human review with the standard 750-record demo data). Saved goals are kept.')) return;
+    api('POST', '/api/demo/reset', { target: 'freshservice' })
+      .then(function (res) { showAlert('Demo data reset — cleared ' + res.cleared.toLocaleString() + ' simulated Freshservice ticket(s). Plan and run a goal to start the demo.'); })
+      .catch(function (err) { showAlert('Could not reset: ' + esc(err.message)); });
+  });
   $('addWaveBtn').addEventListener('click', function () {
     var id = $('addWaveWs').value;
     var ws = (draft.workspace_mapping.workspaces || []).filter(function (x) { return String(x.id) === id; })[0];

@@ -140,6 +140,13 @@ const NOTES = {
     '4. AI changes the operating model. Traditional: API, script, import, human troubleshooting. Agentic: goal, discover, reason, map, test, execute, remediate, explain.',
     'Close: the opportunity is not another migration script. It is an intelligent migration experience that gives customers confidence before, during and after migration.'
   ].join('\n\n'),
+  landscape: [
+    'Other tools in the industry help customers onboard to Freshworks. Representative providers include HDM by Relokia, SaaSGenie, and Klamp from Arbaan.',
+    'HDM by Relokia represents migration-focused services and transfer automation. A recurring challenge is handling custom configurations and exceptions without specialist intervention.',
+    'SaaSGenie represents guided onboarding and migration support. A recurring challenge is that mapping, validation and reconciliation can remain project-led and manual.',
+    'Klamp from Arbaan represents integration and connector automation. A recurring challenge is that moving data through connectors does not by itself establish migration readiness or end-to-end confidence.',
+    'The market validates demand. The remaining opportunity is a single autonomous workflow that discovers, reasons, tests, executes, remediates and explains.'
+  ].join('\n\n'),
   solution: [
     'The user starts with one goal: "Migrate all employees and tickets from Jira Service Management to Freshservice."',
     '01 Discover: JSM customers/employees and tickets; Freshservice requesters, tickets, departments and workspaces.',
@@ -178,33 +185,43 @@ const NOTES = {
     'Today: a human configures, maps, scripts, tests, migrates, troubleshoots and validates, managing every step.',
     'With Zen: a human says "Move JSM to Freshservice." Zen discovers, maps, tests, executes, remediates, reconciles and explains, and brings the human back only when needed.',
     'Close: Give Zen the goal. Let Zen own the migration.'
+  ].join('\n\n'),
+  future: [
+    'Future plan: expose the complete Zen migration workflow as focused MCP tools.',
+    '1. List all source entities in Jira Service Management that must be migrated, beginning with customers (employees) and tickets.',
+    '2. List all available destination entities in Freshservice.',
+    '3. Generate the source-to-destination entity and field mapping.',
+    '4. Run the migration using the approved mapping and controls.',
+    '5. Use Claude to generate a concise migration summary and actionable insights.',
+    '6. Explain what went wrong and recommend how to fix it, enabling remediation and retry.',
+    'Together, these tools turn the prototype workflow into a reusable, observable migration capability.'
   ].join('\n\n')
 };
 
 // 1. Cover
 {
-  const s = newSlide(NOTES.cover, { dark: true, footer: false });
-  shape(s, S.ellipse, 8.25, 0.55, 4.7, 4.7, { line: C.darkLine, lineWidth: 0.75 });
+  const s = newSlide(NOTES.cover, { footer: false });
+  shape(s, S.ellipse, 8.25, 0.55, 4.7, 4.7, { line: C.rule, lineWidth: 0.75 });
   shape(s, S.arc, 8.6, 0.9, 4.0, 4.0, { line: C.purple, lineWidth: 18, angleRange: [335, 285] });
-  label(s, `Jira Service Management  ${ARROW}  Freshservice`, L, 0.9, 7.2, C.lav, { fontSize: 11, charSpacing: 2 });
-  text(s, 'Zen', L - 0.05, 1.2, 6.5, 1.9, 120, { bold: true, fontFace: HEAD, color: C.white });
+  label(s, `Jira Service Management  ${ARROW}  Freshservice`, L, 0.9, 7.2, C.purple, { fontSize: 11, charSpacing: 2 });
+  text(s, 'Zen', L - 0.05, 1.2, 6.5, 1.9, 120, { bold: true, fontFace: HEAD, color: C.ink });
   text(s, 'The Autonomous Enterprise\nMigration Agent', L, 3.22, 7.4, 1.05, 30,
-    { bold: true, fontFace: HEAD, color: C.white, valign: 'top' });
+    { bold: true, fontFace: HEAD, color: C.ink, valign: 'top' });
   text(s, 'From manual migration projects to goal-driven, intelligent migration.', L, 4.42, 7.4, 0.34, 15,
-    { color: C.darkMuted });
+    { color: C.grey });
 
   const steps = ['Discover', 'Map', 'Test', 'Execute', 'Remediate', 'Explain'];
   const stepGap = 2.12, lineY = 5.62;
-  seg(s, L + 0.08, lineY, L + 5 * stepGap + 0.08, lineY, C.darkLine, 1.25);
+  seg(s, L + 0.08, lineY, L + 5 * stepGap + 0.08, lineY, C.rule, 1.25);
   steps.forEach((step, i) => {
     const x = L + i * stepGap;
     const last = i === steps.length - 1;
-    shape(s, S.ellipse, x, lineY - 0.08, 0.16, 0.16, { fill: last ? C.mint : C.purple });
-    label(s, step, x, lineY + 0.22, Math.min(1.8, R - x), last ? C.mint : C.white, { fontSize: 11.5, charSpacing: 2 });
+    shape(s, S.ellipse, x, lineY - 0.08, 0.16, 0.16, { fill: last ? C.green : C.purple });
+    label(s, step, x, lineY + 0.22, Math.min(1.8, R - x), last ? C.green : C.ink, { fontSize: 11.5, charSpacing: 2 });
   });
   text(s, [
-    { text: `From \u201CCan we migrate?\u201D  ${ARROW}  `, options: { color: C.darkMuted } },
-    { text: '\u201CZen knows we\u2019re ready.\u201D', options: { color: C.mint, bold: true } }
+    { text: `From \u201CCan we migrate?\u201D  ${ARROW}  `, options: { color: C.grey } },
+    { text: '\u201CZen knows we\u2019re ready.\u201D', options: { color: C.green, bold: true } }
   ], L, 6.42, CW, 0.4, 17);
 }
 
@@ -299,7 +316,49 @@ const NOTES = {
   ], L, 6.3, CW, 0.4, 16, { bold: true });
 }
 
-// 4. The solution
+// 4. Industry landscape
+{
+  const s = newSlide(NOTES.landscape);
+  heading(s, 'Industry landscape', 'Customers already seek help getting to Freshworks', {
+    sub: 'The market validates migration demand. The experience is still service-led, project-led or connector-led.'
+  });
+
+  const vendors = [
+    {
+      name: 'HDM', owner: 'by Relokia', mode: 'MIGRATION-LED',
+      strength: 'Transfer automation', challenge: 'Custom configurations\n& exception handling'
+    },
+    {
+      name: 'SaaSGenie', owner: 'Onboarding support', mode: 'SERVICE-LED',
+      strength: 'Guided migration', challenge: 'Manual mapping,\nvalidation & reconciliation'
+    },
+    {
+      name: 'Klamp', owner: 'from Arbaan', mode: 'CONNECTOR-LED',
+      strength: 'Integration automation', challenge: 'Readiness across the\nend-to-end journey'
+    }
+  ];
+  vendors.forEach((vendor, i) => {
+    const x = L + i * 4.08;
+    shape(s, S.roundRect, x, 2.12, 3.72, 3.32, { fill: C.white, line: 'E3DFE9', radius: 0.14, shadow: true });
+    label(s, vendor.mode, x + 0.28, 2.4, 2.8, i === 2 ? C.green : C.purple, { fontSize: 9 });
+    text(s, vendor.name, x + 0.28, 2.72, 3.1, 0.56, 27, { bold: true, fontFace: HEAD });
+    text(s, vendor.owner, x + 0.28, 3.25, 3.1, 0.26, 11.5, { color: C.grey2 });
+    seg(s, x + 0.28, 3.72, x + 3.44, 3.72, C.rule, 0.75);
+    label(s, 'Helps with', x + 0.28, 3.98, 1.2, C.grey2, { fontSize: 8.5 });
+    text(s, vendor.strength, x + 0.28, 4.22, 3.1, 0.3, 14, { bold: true });
+    label(s, 'Recurring challenge', x + 0.28, 4.7, 2.2, C.amber, { fontSize: 8.5 });
+    text(s, vendor.challenge, x + 0.28, 4.96, 3.1, 0.42, 12.5, { color: C.grey, valign: 'top' });
+  });
+
+  shape(s, S.roundRect, L, 5.78, CW, 0.76, { fill: C.dark, radius: 0.14 });
+  label(s, 'The gap', 1.0, 6.05, 1.1, C.lav);
+  text(s, 'One agent that owns readiness, execution, remediation and explanation.', 2.2, 5.78, 10.0, 0.76, 16,
+    { bold: true, color: C.white });
+  text(s, 'Representative market framing; recurring challenges describe the migration category, not product-specific limitations.',
+    L, 6.68, CW, 0.18, 8.5, { color: C.grey2 });
+}
+
+// 5. The solution
 {
   const s = newSlide(NOTES.solution);
   heading(s, 'The solution', 'Zen turns migration into a confidence-based workflow');
@@ -360,13 +419,13 @@ const NOTES = {
 
 // 5. How Zen works
 {
-  const s = newSlide(NOTES.architecture, { dark: true });
-  heading(s, 'How Zen works', 'From natural language to autonomous execution', { dark: true });
-  person(s, 0.95, 1.88, 0.4, C.lav);
+  const s = newSlide(NOTES.architecture);
+  heading(s, 'How Zen works', 'From natural language to autonomous execution');
+  person(s, 0.95, 1.88, 0.4, C.purple);
   chip(s, `\u201CMigrate JSM ${ARROW} Freshservice\u201D`, 1.35, 1.8, 3.3, 0.5,
-    { fill: C.panel2, line: C.darkLine, color: C.white, bold: true, size: 13.5 });
-  text(s, 'Natural-language goal', 4.85, 1.8, 3, 0.5, 11, { color: C.darkMuted });
-  seg(s, 3.0, 2.3, 3.0, 2.6, C.lav, 1.25, { arrow: true });
+    { fill: C.tint, line: C.lav, color: C.purpleDk, bold: true, size: 13.5 });
+  text(s, 'Natural-language goal', 4.85, 1.8, 3, 0.5, 11, { color: C.grey });
+  seg(s, 3.0, 2.3, 3.0, 2.6, C.purple, 1.25, { arrow: true });
 
   shape(s, S.roundRect, L, 2.62, CW, 2.5, { fill: '14111B', line: '4B2A7A', lineWidth: 1, radius: 0.14 });
   label(s, `Zen agent  ${DOT}  Zen Migration Engine`, 0.95, 2.78, 6, C.lav);
@@ -603,49 +662,101 @@ const NOTES = {
 
 // 9. The vision
 {
-  const s = newSlide(NOTES.vision, { dark: true });
-  label(s, 'The vision', L, 0.55, 4, C.lav, { fontSize: 10.5, charSpacing: 2 });
-  text(s, 'From migration project', L, 0.86, CW, 0.7, 40, { bold: true, fontFace: HEAD, color: C.darkMuted });
-  text(s, 'to migration agent', L, 1.52, CW, 0.7, 40, { bold: true, fontFace: HEAD, color: C.white });
+  const s = newSlide(NOTES.vision);
+  label(s, 'The vision', L, 0.55, 4, C.purple, { fontSize: 10.5, charSpacing: 2 });
+  text(s, 'From migration project', L, 0.86, CW, 0.7, 40, { bold: true, fontFace: HEAD, color: C.grey2 });
+  text(s, 'to migration agent', L, 1.52, CW, 0.7, 40, { bold: true, fontFace: HEAD, color: C.ink });
 
-  label(s, 'Today', L, 2.8, 1.8, C.darkMuted, { fontSize: 10 });
-  text(s, 'People run\nevery step', L, 3.06, 1.8, 0.62, 14, { bold: true, color: C.darkMuted, valign: 'top' });
+  label(s, 'Today', L, 2.8, 1.8, C.grey2, { fontSize: 10 });
+  text(s, 'People run\nevery step', L, 3.06, 1.8, 0.62, 14, { bold: true, color: C.grey, valign: 'top' });
   const todaySteps = ['Configure', 'Map', 'Script', 'Test', 'Migrate', 'Troubleshoot', 'Validate'];
   const todayX = 2.7, todayW = 1.25, todayStep = (R - 0.1 - todayX - todayW) / 6;
-  seg(s, todayX + todayW / 2, 3.66, todayX + 6 * todayStep + todayW / 2, 3.66, C.darkLine, 1);
+  seg(s, todayX + todayW / 2, 3.66, todayX + 6 * todayStep + todayW / 2, 3.66, C.rule, 1);
   todaySteps.forEach((step, i) => {
     const x = todayX + i * todayStep;
-    person(s, x + todayW / 2, 2.92, 0.32, C.dim);
-    chip(s, step, x, 3.43, todayW, 0.46, { fill: C.panel, line: C.darkLine, color: C.darkMuted, size: 11.5 });
+    person(s, x + todayW / 2, 2.92, 0.32, C.grey2);
+    chip(s, step, x, 3.43, todayW, 0.46, { fill: C.soft, line: C.rule, color: C.grey, size: 11.5 });
   });
 
-  label(s, 'With Zen', L, 4.62, 1.8, C.mint, { fontSize: 10 });
-  text(s, 'People set\nthe goal', L, 4.88, 1.8, 0.62, 14, { bold: true, color: C.white, valign: 'top' });
+  label(s, 'With Zen', L, 4.62, 1.8, C.green, { fontSize: 10 });
+  text(s, 'People set\nthe goal', L, 4.88, 1.8, 0.62, 14, { bold: true, color: C.ink, valign: 'top' });
   chip(s, `\u201CMove JSM ${ARROW} Freshservice\u201D`, 2.45, 4.3, 2.75, 0.44, { fill: C.purple, color: C.white, bold: true, size: 12 });
   shape(s, S.triangle, 2.8, 4.73, 0.2, 0.12, { fill: C.purple, flipV: true });
-  person(s, 2.9, 4.98, 0.44, C.white);
-  seg(s, 3.2, 5.2, 3.5, 5.2, C.lav, 1.25, { arrow: true });
+  person(s, 2.9, 4.98, 0.44, C.purple);
+  seg(s, 3.2, 5.2, 3.5, 5.2, C.purple, 1.25, { arrow: true });
   const zenX = 3.55, zenW = 8.3, zenY = 4.85, zenH = 0.7;
-  shape(s, S.roundRect, zenX, zenY, zenW, zenH, { fill: '15121C', line: C.purple, lineWidth: 1, radius: 0.12 });
+  shape(s, S.roundRect, zenX, zenY, zenW, zenH, { fill: C.tint, line: C.lav, lineWidth: 1, radius: 0.12 });
   chip(s, 'ZEN', zenX + 0.1, zenY + 0.12, 0.75, 0.46, { fill: C.purple, color: C.white, bold: true, size: 12, charSpacing: 2, radius: 0.08 });
   const zenSteps = ['Discover', 'Map', 'Test', 'Execute', 'Remediate', 'Reconcile', 'Explain'];
   const zenChipW = (zenW - 0.2 - 0.75 - 0.1 - 6 * 0.07) / 7;
   zenSteps.forEach((step, i) =>
-    chip(s, step, zenX + 0.95 + i * (zenChipW + 0.07), zenY + 0.12, zenChipW, 0.46, { fill: '2A1F3D', color: C.white, size: 11, radius: 0.08 }));
-  label(s, 'Zen owns the migration', 8.0, 4.52, zenX + zenW - 8.0, C.mint, { align: 'right', fontSize: 9 });
-  seg(s, zenX + zenW + 0.05, 5.2, zenX + zenW + 0.3, 5.2, C.lav, 1.25, { arrow: true });
-  person(s, 12.4, 4.98, 0.44, C.dim);
-  text(s, 'Only when needed', 11.3, 5.62, R - 11.3, 0.2, 9, { color: C.mint, bold: true, align: 'right' });
+    chip(s, step, zenX + 0.95 + i * (zenChipW + 0.07), zenY + 0.12, zenChipW, 0.46, { fill: C.white, line: C.lav, color: C.purpleDk, size: 11, radius: 0.08 }));
+  label(s, 'Zen owns the migration', 8.0, 4.52, zenX + zenW - 8.0, C.green, { align: 'right', fontSize: 9 });
+  seg(s, zenX + zenW + 0.05, 5.2, zenX + zenW + 0.3, 5.2, C.purple, 1.25, { arrow: true });
+  person(s, 12.4, 4.98, 0.44, C.grey2);
+  text(s, 'Only when needed', 11.3, 5.62, R - 11.3, 0.2, 9, { color: C.green, bold: true, align: 'right' });
 
   text(s, [
-    { text: 'Give Zen the goal. ', options: { color: C.white } },
-    { text: 'Let Zen own the migration.', options: { color: C.lav } }
+    { text: 'Give Zen the goal. ', options: { color: C.ink } },
+    { text: 'Let Zen own the migration.', options: { color: C.purple } }
   ], L, 6.22, CW, 0.56, 26, { bold: true, fontFace: HEAD });
 }
 
+// 11. Future plans
+{
+  const s = newSlide(NOTES.future);
+  heading(s, 'Future plans', 'Productize the workflow as MCP tools', {
+    sub: 'Six focused tools. One autonomous migration capability.'
+  });
+
+  const tools = [
+    ['01', 'Discover source', 'List JSM entities', `Customers (Employees)\n${DOT} Tickets`],
+    ['02', 'Discover target', 'List Freshservice entities', 'Available destination\nentities'],
+    ['03', 'Map', 'Source to destination', 'Entity + field\nmapping'],
+    ['04', 'Migrate', 'Run the migration', 'Approved mappings\n+ controls'],
+    ['05', 'Summarize', 'Claude insights', 'Outcome + migration\nsummary'],
+    ['06', 'Diagnose', 'Explain and fix', 'What went wrong\n+ how to fix it']
+  ];
+  const cardW = 1.78, gap = 0.23, startX = 0.7, cardY = 2.42, cardH = 2.52;
+  tools.forEach(([num, title, action, detail], i) => {
+    const x = startX + i * (cardW + gap);
+    const final = i === tools.length - 1;
+    shape(s, S.roundRect, x, cardY, cardW, cardH, {
+      fill: final ? C.greenTint : C.white,
+      line: final ? C.green : 'E3DFE9',
+      lineWidth: final ? 1.2 : 0.75,
+      radius: 0.12,
+      shadow: !final
+    });
+    chip(s, num, x + 0.18, cardY + 0.2, 0.46, 0.46, {
+      type: S.ellipse, fill: final ? C.green : C.purple, color: C.white,
+      bold: true, size: 11
+    });
+    label(s, title, x + 0.18, cardY + 0.85, cardW - 0.36, final ? C.green : C.purple, { fontSize: 8.8 });
+    text(s, action, x + 0.18, cardY + 1.17, cardW - 0.36, 0.48, 14, {
+      bold: true, color: C.ink, valign: 'top'
+    });
+    text(s, detail, x + 0.18, cardY + 1.79, cardW - 0.36, 0.5, 10.5, {
+      color: final ? C.green : C.grey, valign: 'top'
+    });
+    if (i < tools.length - 1) {
+      seg(s, x + cardW + 0.04, cardY + cardH / 2, x + cardW + gap - 0.04, cardY + cardH / 2, C.purple, 1.1, { arrow: true });
+    }
+  });
+
+  label(s, 'MCP tool chain', L, 5.4, 2.2, C.grey2);
+  seg(s, 2.25, 5.51, R, 5.51, C.rule, 0.9);
+  text(s, [
+    { text: 'Discover. Map. Migrate. ', options: { color: C.ink } },
+    { text: 'Understand the outcome and improve the next run.', options: { color: C.green } }
+  ], L, 5.86, CW, 0.48, 20, { bold: true, fontFace: HEAD });
+  text(s, 'Next milestone: a reusable, observable and recoverable migration platform.', L, 6.48, CW, 0.28, 12.5,
+    { color: C.grey });
+}
+
 async function main() {
-  if (slideNo !== 9) throw new Error(`Expected 9 slides, built ${slideNo}.`);
-  const file = path.join(__dirname, 'Zen-Deck-v3.pptx');
+  if (slideNo !== 11) throw new Error(`Expected 11 slides, built ${slideNo}.`);
+  const file = process.env.ZEN_DECK_OUTPUT || path.join(__dirname, 'Zen-Deck-v3.pptx');
   await pptx.writeFile({ fileName: file });
   console.log(`Wrote ${file} (${slideNo} slides)`);
 }

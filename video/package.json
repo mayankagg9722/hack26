@@ -1,0 +1,18 @@
+{
+  "name": "zen-migration-story-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reproducible three-minute Zen migration story film",
+  "scripts": {
+    "prepare-assets": "node build.js prepare",
+    "preview": "node build.js preview",
+    "render": "node build.js render",
+    "remux": "node build.js remux",
+    "verify": "node build.js verify"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "msedge-tts": "2.0.7",
+    "playwright-core": "^1.55.0"
+  }
+}

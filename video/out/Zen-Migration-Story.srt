@@ -1,0 +1,111 @@
+1
+00:00:00,700 --> 00:00:05,980
+MAYA: We're moving our IT operations to Freshservice. Three weeks to go live.
+
+2
+00:00:06,200 --> 00:00:14,503
+For an enterprise, moving to a new ITSM platform sounds simple. Until you realize you have to move everything that makes your business work.
+
+3
+00:00:18,700 --> 00:00:21,329
+MAYA: Rahul, can you handle the migration?
+
+4
+00:00:22,400 --> 00:00:25,630
+RAHUL: I'll start with the employees, then the tickets.
+
+5
+00:00:27,000 --> 00:00:31,250
+Two systems. Different schemas. Every field needs a decision.
+
+6
+00:00:33,800 --> 00:00:41,674
+A field with no match. Priorities that don't translate. Missing requesters. And suddenly, thousands of notifications.
+
+7
+00:00:47,500 --> 00:00:49,187
+MAYA: What do we do with these?
+
+8
+00:00:50,800 --> 00:00:53,092
+RAHUL: We need to investigate them.
+
+9
+00:00:54,800 --> 00:00:56,559
+SARAH: Are we ready for go-live?
+
+10
+00:00:58,800 --> 00:01:05,817
+And that's the real problem. Migration isn't just about moving data. It's about knowing whether you can trust the migration.
+
+11
+00:01:09,600 --> 00:01:13,077
+Zen. The autonomous enterprise migration agent.
+
+12
+00:01:16,800 --> 00:01:21,924
+MAYA: Migrate all employees and tickets from Jira Service Management to Freshservice.
+
+13
+00:01:23,300 --> 00:01:24,514
+ZEN: Goal understood.
+
+14
+00:01:25,500 --> 00:01:30,229
+One goal. Zen identifies the source, the target, and the work ahead.
+
+15
+00:01:33,000 --> 00:01:42,667
+Zen discovers the entities and fields on both sides. Customers become requesters. Tickets keep their context. Field mappings are created automatically.
+
+16
+00:01:49,000 --> 00:01:54,302
+Instead of importing everything and hoping it works, Zen tests the migration first.
+
+17
+00:01:54,800 --> 00:02:02,903
+ZEN: One hundred records tested. Ninety-eight successful. Two automatically remediated. Zero critical errors.
+
+18
+00:02:04,000 --> 00:02:05,556
+ZEN: Migration is ready.
+
+19
+00:02:08,700 --> 00:02:12,717
+Ten thousand records. Then, a requester can't be found.
+
+20
+00:02:13,100 --> 00:02:14,296
+ZEN: Diagnosing.
+
+21
+00:02:15,900 --> 00:02:19,122
+ZEN: A verified email match. Resolved.
+
+22
+00:02:19,600 --> 00:02:24,452
+ZEN: This requester cannot be safely resolved. Human review required.
+
+23
+00:02:24,800 --> 00:02:32,175
+Zen doesn't hide failures. It fixes what it safely can, and brings a human in only when judgment is required.
+
+24
+00:02:33,800 --> 00:02:35,709
+MAYA: Zen, what went wrong?
+
+25
+00:02:35,900 --> 00:02:46,828
+ZEN: The primary issue was missing requester information. I automatically resolved records where a reliable requester match was found. Seventy records require human review.
+
+26
+00:02:47,300 --> 00:02:48,402
+SARAH: Are we ready?
+
+27
+00:02:48,800 --> 00:02:53,989
+ZEN: The migration is reconciled and the remaining exceptions are clearly identified.
+
+28
+00:02:55,400 --> 00:02:58,319
+Give Zen the goal. Let Zen own the migration.

@@ -48,11 +48,35 @@
           '<td><b>' + pct(r.success_rate) + '</b><small>' + esc(r.reconciliation.toLowerCase()) + '</small></td>' +
           '<td>' + n(r.failures) + '<small>' + n(r.auto_remediated) + ' auto-fixed</small></td><td>' + n(r.human_interventions) + '</td>' +
           '<td><em class="' + st[0] + '">' + esc(st[1]) + '</em></td>' +
-          '<td><a class="mini ghost" href="report.html?run=' + encodeURIComponent(r.run_id) + '">Report →</a></td></tr>';
+          '<td><span class="hs-actions"><a class="mini ghost" href="report.html?run=' + encodeURIComponent(r.run_id) + '">View report</a>' +
+          '<button type="button" class="mini ghost" data-download="' + esc(r.run_id) + '">Download</button></span></td></tr>';
       }).join('');
     })
     .catch(function (err) {
       $('hsAlert').innerHTML = 'Could not load migration history: ' + esc(err.message);
       $('hsAlert').hidden = false;
     });
+
+  // Download: the same report JSON as the report page's "Download JSON"
+  $('hsRows').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-download]');
+    if (!b) return;
+    var id = b.getAttribute('data-download');
+    b.disabled = true;
+    b.textContent = 'Preparing…';
+    fetch('/api/runs/' + encodeURIComponent(id) + '/report')
+      .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(function (d) {
+        var r = d.report || d;
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(r, null, 2)], { type: 'application/json' }));
+        a.download = 'zen-migration-report-' + id + '.json';
+        a.click();
+      })
+      .catch(function (err) {
+        $('hsAlert').innerHTML = 'Could not download the report: ' + esc(err.message);
+        $('hsAlert').hidden = false;
+      })
+      .then(function () { b.disabled = false; b.textContent = 'Download'; });
+  });
 })();

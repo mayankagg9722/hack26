@@ -1,16 +1,122 @@
 <!DOCTYPE html>
-<html lang="en" class="dew-light-theme">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Migration agent — Zen</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%23276cf0' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
-<!-- Built from ui/ (React + @freshworks/dew-components): cd ui && npm run build -->
-<link rel="stylesheet" href="app/integrations/zen-integrations.css" />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="integrations.css" />
+<link rel="stylesheet" href="planner.css?v=9" />
+<link rel="stylesheet" href="report.css?v=1" />
+<link rel="stylesheet" href="customer-migration.css?v=1" />
+<link rel="stylesheet" href="agent.css?v=3" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
 </head>
-<body>
-<div id="zen-agent" data-dew></div>
-<noscript>Zen's Migration agent needs JavaScript.</noscript>
-<script type="module" src="app/integrations/zen-agent.js"></script>
+<body class="hub-body">
+
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav" href="dashboard.html">◫ Overview</a>
+    <a class="hub-nav" href="dashboard.html#customers">☰ Customers</a>
+    <a class="hub-nav" href="dashboard.html#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
+    <a class="hub-nav" href="mapping.html">⇆ Field mapping</a>
+    <a class="hub-nav" href="planner.html">◎ Goal planner</a>
+    <a class="hub-nav" href="history.html">▤ Migration history</a>
+  </aside>
+
+  <main class="hub-main">
+    <header class="hub-head">
+      <div>
+        <h1>Migration agent</h1>
+        <p>Zen discovers what Jira Service Management and Freshservice hold, maps one onto the other, migrates customers and tickets, fixes what is safe to fix, asks you about the rest — and explains the result.</p>
+      </div>
+    </header>
+
+    <div class="int-alert" id="agAlert" hidden></div>
+
+    <!-- 1. discover -->
+    <article class="hub-card ag-card">
+      <div class="hub-card-head">
+        <h2><span class="ag-num">1</span> Discover entities</h2>
+        <button class="mini ghost" id="agDiscover">Discover again</button>
+      </div>
+      <p class="int-note ag-lead">Zen asks each system what it holds and which fields it exposes (<code>list_source_entities</code>, <code>list_target_entities</code>).</p>
+      <div class="ag-systems">
+        <div class="ag-system" id="agSource"><p class="wave-muted">Discovering Jira Service Management…</p></div>
+        <div class="int-arrow" aria-hidden="true">→</div>
+        <div class="ag-system" id="agTarget"><p class="wave-muted">Discovering Freshservice…</p></div>
+      </div>
+      <div id="agTargetNotes"></div>
+    </article>
+
+    <!-- 2. map -->
+    <article class="hub-card ag-card">
+      <div class="hub-card-head">
+        <h2><span class="ag-num">2</span> Map source → destination</h2>
+        <button class="mini" id="agGenerate" disabled>Generate mapping</button>
+      </div>
+      <p class="int-note ag-lead">Exact names first, then JSM → Freshservice vendor rules, then semantic matching, then Claude. Low-confidence suggestions wait for you — Zen does not invent mappings.</p>
+      <div class="cm-filters" id="agPairs"></div>
+      <div id="agMapping"></div>
+      <div id="agWorkspace"></div>
+    </article>
+
+    <!-- 3. run -->
+    <article class="hub-card ag-card cm-card" id="agRunCard">
+      <div class="cm-head">
+        <div>
+          <h2><span class="ag-num">3</span> Run migration</h2>
+          <p>Plan → pre-check → fetch → transform → look up references → create or update → validate → reconcile. Customers go first because tickets reference requesters.</p>
+        </div>
+        <button type="button" class="pl-reset" id="agReset" hidden>Reset demo data</button>
+      </div>
+      <div class="cm-config ag-config">
+        <div class="cm-box"><span>Source</span><b>Jira Service Management</b><em id="agSrcMode"></em></div>
+        <div class="cm-arrow" aria-hidden="true">→</div>
+        <div class="cm-box"><span>Destination</span><b>Freshservice</b><em id="agTgtMode"></em></div>
+        <div class="cm-box"><span>Migration goal (Goal planner)</span><select id="agGoal" aria-label="Migration goal"><option value="">No goal — run now</option></select></div>
+        <div class="cm-box ag-entities"><span>Entities</span>
+          <label><input type="checkbox" value="customers" checked> Customers → Requesters</label>
+          <label><input type="checkbox" value="tickets" checked> Tickets → Tickets</label>
+        </div>
+      </div>
+      <div class="cm-actions">
+        <button class="btn btn-primary sm" id="agRun" disabled>Run migration</button>
+        <span class="int-note" id="agRunNote"></span>
+      </div>
+      <div class="pl-msgs" id="agDemoNote" hidden><div class="pl-msg note">Mock data — JSM and Freshservice are simulated here, including controlled failures (missing requesters, invalid departments and priorities, API errors, rate limits, duplicates). Configure the API credentials on the server to use real systems.</div></div>
+      <div id="agLive"></div>
+    </article>
+
+    <!-- 4. insights -->
+    <article class="hub-card ag-card" id="agInsightsCard" hidden>
+      <div class="hub-card-head">
+        <h2><span class="ag-num">4</span> Migration insights</h2>
+        <button class="mini" id="agInsightsBtn">Generate insights with Claude</button>
+      </div>
+      <p class="int-note ag-lead">Claude analyses the migration — the counts come from Zen's record ledger; Claude explains them and recommends what to do next.</p>
+      <div id="agInsights"></div>
+    </article>
+  </main>
+</div>
+
+<script src="agent.js?v=1"></script>
 </body>
 </html>

@@ -26,7 +26,6 @@
         "*.mp4",
         "devpost/**",
         "functions/**",
-        "ui/**",
         "deck/**"
       ],
       "cleanUrls": true,
@@ -113,7 +112,6 @@
         "*.mp4",
         "devpost/**",
         "functions/**",
-        "ui/**",
         "deck/**"
       ],
       "cleanUrls": true,

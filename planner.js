@@ -989,6 +989,7 @@
   }
 
   function renderConfig(tz) {
+    if (!$('configText')) return; // the structured-configuration panel is not shown on this page
     var g = draft;
     var pad = function (k) { return (k + ':').padEnd(21); };
     var sub = function (k) { return '  ' + (k + ':').padEnd(19); };
@@ -1073,7 +1074,7 @@
     draft.blackout_periods.push({ label: 'Business hours', days: ['mon', 'tue', 'wed', 'thu', 'fri'], start: '09:00', end: '18:00' });
     setDirty(true); render();
   });
-  $('toggleJson').addEventListener('click', function () { showJson = !showJson; renderConfig(draft.schedule.timezone); });
+  if ($('toggleJson')) $('toggleJson').addEventListener('click', function () { showJson = !showJson; renderConfig(draft.schedule.timezone); });
   window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
   $('tzNote').textContent = 'Times in ' + browserTz;

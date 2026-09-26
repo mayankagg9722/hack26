@@ -30,13 +30,10 @@
     <a class="hub-nav is-active" href="#">◫ Overview</a>
     <a class="hub-nav" href="#customers">☰ Customers</a>
     <a class="hub-nav" href="#blockers">⚠ Blockers</a>
-    <a class="hub-nav" href="#sessions">▶ Sessions</a>
     <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
     <a class="hub-nav" href="mapping.html">⇆ Field mapping</a>
     <a class="hub-nav" href="planner.html">◎ Goal planner</a>
     <a class="hub-nav" href="history.html">▤ Migration history</a>
-    <a class="hub-nav" href="#">📚 Knowledge</a>
-    <a class="hub-nav" href="#">⚙ Agent settings</a>
     <div class="hub-side-note">
       <b>Zen is live</b>
       <span>Running 3 sessions right now</span>
@@ -77,15 +74,14 @@
             <tr><td><span class="cav n1">NG</span> Northwind Group</td><td>Enterprise</td><td><span class="bar"><i style="width:100%"></i></span></td><td>2h ago</td><td><em class="ok">Live</em></td></tr>
             <tr><td><span class="cav n2">CL</span> Cerby Labs</td><td>Growth</td><td><span class="bar"><i style="width:64%"></i></span></td><td>Yesterday</td><td><em>In progress</em></td></tr>
             <tr class="is-risk"><td><span class="cav n3">UF</span> Uptick Field</td><td>Growth</td><td><span class="bar"><i style="width:31%"></i></span></td><td>4 days ago</td><td><em class="warn">Stuck</em></td></tr>
-            <tr><td><span class="cav n4">BG</span> Budgetly</td><td>Starter</td><td><span class="bar"><i style="width:78%"></i></span></td><td>6h ago</td><td><em>In progress</em></td></tr>
-            <tr><td><span class="cav n5">QA</span> Qualia Health</td><td>Enterprise</td><td><span class="bar"><i style="width:88%"></i></span></td><td>1h ago</td><td><em>In progress</em></td></tr>
             <tr class="is-risk"><td><span class="cav n6">CB</span> Canibuild</td><td>Growth</td><td><span class="bar"><i style="width:12%"></i></span></td><td>9 days ago</td><td><em class="bad">At risk</em></td></tr>
           </tbody>
         </table>
       </article>
 
-      <article class="hub-card" id="blockers">
-        <div class="hub-card-head"><h2>Needs a human</h2><span class="pill-count">4</span></div>
+      <article class="hub-card wide" id="blockers">
+        <div class="hub-card-head"><h2>Needs a human</h2><span class="hub-sub-count">2 most urgent shown <span class="pill-count">4</span></span></div>
+        <div class="bl-grid">
         <div class="blocker">
           <div class="bl-top"><b>Uptick Field</b><span>4 days ago</span></div>
           <p>"Can we get SSO on the Growth plan?" — commercial question, outside Zen's scope.</p>
@@ -96,33 +92,7 @@
           <p>Data import failed 3 times — malformed CSV from their legacy system.</p>
           <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
         </div>
-        <div class="blocker">
-          <div class="bl-top"><b>Cerby Labs</b><span>Yesterday</span></div>
-          <p>Asked for a custom invoice template — not covered in the knowledge base.</p>
-          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
         </div>
-        <div class="blocker">
-          <div class="bl-top"><b>Budgetly</b><span>6h ago</span></div>
-          <p>Multi-region tax setup — Zen flagged low confidence and paused.</p>
-          <div class="bl-actions"><button class="mini">Assign to me</button><button class="mini ghost">View transcript</button></div>
-        </div>
-      </article>
-
-      <article class="hub-card" id="sessions">
-        <div class="hub-card-head"><h2>Live &amp; recent sessions</h2></div>
-        <div class="sess live">
-          <span class="sdot"></span>
-          <div><b>Qualia Health · Dr. Amara O.</b><span>Connecting Google Calendar · 3:41 elapsed</span></div>
-          <a class="mini ghost" href="demo.html">Watch</a>
-        </div>
-        <div class="sess live">
-          <span class="sdot"></span>
-          <div><b>Northwind Group · Front desk</b><span>Staff training · 1:12 elapsed</span></div>
-          <a class="mini ghost" href="demo.html">Watch</a>
-        </div>
-        <div class="sess"><span class="sdot done"></span><div><b>Budgetly · Tom R.</b><span>Completed · 5 of 5 steps · 4:12</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
-        <div class="sess"><span class="sdot done"></span><div><b>Cerby Labs · Ana P.</b><span>Completed · 4 of 5 steps · 7:38</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
-        <div class="sess"><span class="sdot warn"></span><div><b>Uptick Field · Marc D.</b><span>Abandoned at "Sync CRM" · 2:04</span></div><a class="mini ghost" href="demo.html">Replay</a></div>
       </article>
 
       <article class="hub-card wide">
@@ -143,7 +113,7 @@
   </main>
 </div>
 
-<script src="dashboard-goals.js"></script>
+<script src="dashboard-goals.js?v=2"></script>
 <script>
 document.querySelectorAll('.chip').forEach(function (c) {
   c.addEventListener('click', function () {

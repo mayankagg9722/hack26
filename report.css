@@ -111,6 +111,7 @@ section.hub-card{margin-bottom:14px}
 .hs-table td{font-size:13px;vertical-align:middle}
 .hs-table code{font-size:12px}
 .hs-table small{display:block;font-size:11.5px;color:var(--grey-light)}
+.hs-actions{display:flex;gap:6px;white-space:nowrap}
 
 @media print{
   .demo-bar,.hub-side,.rp-actions,[data-table]{display:none !important}

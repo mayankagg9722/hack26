@@ -225,7 +225,8 @@
 
   api('/api/integrations')
     .then(function (data) {
-      catalog.sources = (data.sources || []).map(function (s) { s.role = 'source'; return s; });
+      // only Jira Service Management is offered as a source here (legacy/mock adapters stay available to the API)
+      catalog.sources = (data.sources || []).filter(function (s) { return s.id === 'jira'; }).map(function (s) { s.role = 'source'; return s; });
       catalog.targets = (data.targets || []).map(function (t) { t.role = 'target'; return t; });
       if (!byId(catalog.sources, state.source) && catalog.sources[0]) state.source = catalog.sources[0].id;
       if (!byId(catalog.targets, state.target) && catalog.targets[0]) state.target = catalog.targets[0].id;

@@ -60,6 +60,11 @@
 .bl-top span{font-size:11.5px;color:var(--grey-light);font-weight:500}
 .blocker p{font-size:13px;color:var(--grey);line-height:1.5;margin:6px 0 10px}
 .bl-actions{display:flex;gap:7px}
+.bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bl-grid .blocker{margin-bottom:0}
+.hub-sub-count{font-size:12px;color:var(--grey-light);display:flex;align-items:center;gap:8px}
+.goal-more{font-size:12.5px;color:var(--grey);margin-top:10px}
+.goal-more a{color:var(--purple);font-weight:700}
 .mini{border:0;border-radius:3px;background:var(--purple);color:#fff;font-size:12px;font-weight:700;padding:6px 11px}
 .mini.ghost{background:#fff;border:1px solid var(--line);color:#000}
 .mini.assigned{background:#E7F7EE;color:#12A150}
@@ -85,6 +90,7 @@
   .hub{grid-template-columns:1fr}
   .hub-side{display:none}
   .hub-grid{grid-template-columns:1fr}
+  .bl-grid{grid-template-columns:1fr}
   .hub-card.wide{grid-column:span 1}
   .hub-main{padding:20px}
   .hub-table{font-size:12.5px}

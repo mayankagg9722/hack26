@@ -21,11 +21,8 @@ functions/.env
 functions/.secret.local
 firebase-debug.log
 firebase-debug.*.log
-ui-debug.log
 
 # os
 Thumbs.db
 .DS_Store
-
-# Dew UI build tooling
-ui/node_modules/
+ui-debug.log

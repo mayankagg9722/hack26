@@ -150,10 +150,11 @@
     var details = showDetails ? '<div class="cm-details"><div class="cm-filters">' +
       [['ALL', 'All'], ['MIGRATED', 'Migrated'], ['SKIPPED', 'Skipped'], ['FAILED', 'Failed']].map(function (f) {
         return '<button type="button" class="chip' + (filter === f[0] ? ' is-active' : '') + '" data-cm-filter="' + f[0] + '">' + f[1] + ' (' + count(f[0]) + ')</button>';
-      }).join('') + '</div><div class="cm-table-wrap"><table class="hub-table cm-table"><thead><tr><th>JSM Customer ID</th><th>Customer</th><th>Freshservice Employee ID</th><th>Status</th><th>Note</th></tr></thead><tbody>' +
+      }).join('') + '</div><div class="cm-table-wrap"><table class="hub-table cm-table"><thead><tr><th>Customer</th><th>JSM Customer ID</th><th>Freshservice Employee ID</th><th>Status</th><th>Error</th><th>Last updated</th></tr></thead><tbody>' +
       rows.map(function (r) {
-        return '<tr><td><code>' + esc(r.jsm_customer_id || '—') + '</code></td><td><b>' + esc(r.name || '(no name)') + '</b><br><small class="wave-muted">' + esc(r.email) + '</small></td>' +
-          '<td><code>' + esc(r.fs_employee_id || '—') + '</code></td><td><em class="' + esc(r.status) + '">' + esc(r.status.replace('_', ' ')) + '</em></td><td class="msg">' + esc(r.message || '') + '</td></tr>';
+        return '<tr><td><b>' + esc(r.name || '(no name)') + '</b><br><small class="wave-muted">' + esc(r.email) + '</small></td><td><code>' + esc(r.jsm_customer_id || '—') + '</code></td>' +
+          '<td><code>' + esc(r.fs_employee_id || '—') + '</code></td><td><em class="' + esc(r.status) + '">' + esc(r.status.replace('_', ' ')) + '</em></td>' +
+          '<td class="msg">' + esc(r.status === 'FAILED' || r.status === 'SKIPPED' ? r.message || '' : '') + '</td><td class="wave-muted">' + esc(r.updated_at ? when(r.updated_at) : '—') + '</td></tr>';
       }).join('') + '</tbody></table></div></div>' : '';
 
     box.innerHTML = '<div class="cm-live' + cls + '">' +

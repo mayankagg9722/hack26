@@ -5,7 +5,6 @@
   'use strict';
 
   var STORE_KEY = 'zen.integrations.v1';
-  var HIGH_CONFIDENCE = 0.8;
 
   var conn = loadConn();
   var catalog = { sources: [], targets: [] };
@@ -414,15 +413,14 @@
   $('forget').addEventListener('click', function () {
     if (window.confirm('Forget the saved mapping for this source and target?')) forget();
   });
-  $('acceptHigh').addEventListener('click', function () {
-    var changed = false;
-    page.rows.forEach(function (r) {
-      if (r.decision === 'pending' && r.targetField && r.targetField === r.suggestedTarget && r.confidence >= HIGH_CONFIDENCE) {
-        r.decision = 'accepted';
-        changed = true;
-      }
-    });
-    if (changed) { page.dirty = true; renderAll(); schedulePreview(); }
+  // Record walkthrough accordion (collapsed by default to keep the page short)
+  $('walkToggle').addEventListener('click', function () {
+    var open = $('walkToggle').getAttribute('aria-expanded') !== 'true';
+    $('walkToggle').setAttribute('aria-expanded', String(open));
+    $('walkBody').hidden = !open;
+    $('walkNav').hidden = !open;
+    $('walkHint').hidden = open;
+    $('walkCard').classList.toggle('is-open', open);
   });
   $('prevRec').addEventListener('click', function () { if (page.index > 0) { page.index--; runPreview(); } });
   $('nextRec').addEventListener('click', function () { if (page.index < page.total - 1) { page.index++; runPreview(); } });

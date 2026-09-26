@@ -1,0 +1,77 @@
+/* ===== Migration agent — builds on dashboard.css, integrations.css, planner.css, report.css, customer-migration.css ===== */
+.ag-card{margin-top:14px}
+.ag-card .hub-card-head h2,.ag-card .cm-head h2{display:flex;align-items:center;gap:9px}
+.ag-num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:700}
+.ag-lead{margin:-6px 0 14px}
+.ag-lead code,.ag-table code{background:#F7F7F9;border:1px solid var(--line);border-radius:3px;padding:1px 5px;font-size:12px}
+
+.ag-systems{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:10px;align-items:start}
+.ag-system{border:1px solid var(--line);border-radius:8px;padding:14px;min-width:0}
+.ag-system-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.ag-system-head b{display:block;font-size:15px}
+.ag-eyebrow{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light);margin-bottom:2px}
+.ag-mode{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ag-mode small{font-size:11.5px;color:var(--grey-light)}
+.ag-mode .int-mode,.cm-box .int-mode{margin-left:0}
+.int-mode.ag-mock{background:#FEF3C7;color:#B45309}
+
+.ag-table td{vertical-align:top;font-size:12.5px}
+.ag-table th{white-space:nowrap}
+.ag-sub{display:block;font-size:11.5px;color:var(--grey-light);margin-top:2px;font-weight:400}
+.ag-sub.ag-warn{color:#B45309}
+.ag-sub-inline{font-size:12.5px;font-weight:500;color:var(--grey);margin-left:6px}
+.ag-fields{color:var(--grey);max-width:220px}
+.ag-why{color:var(--grey);min-width:220px;max-width:340px;line-height:1.45}
+.ag-nowrap{white-space:nowrap}
+.ag-pct{font-size:12px;font-weight:600}
+.ag-tf{white-space:nowrap}
+.ag-empty{border:1px dashed var(--line);border-radius:8px;padding:18px;text-align:center}
+.ag-h3{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light);margin:18px 0 8px}
+
+.ag-config{grid-template-columns:1fr 24px 1fr 1.3fr 1.3fr}
+.ag-entities label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+.ag-entities input{width:auto}
+
+.ag-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.ag-bar{margin:8px 0 12px}
+.ag-tiles{grid-template-columns:repeat(4,minmax(0,1fr));margin:0 0 12px}
+.ag-stages td{padding-top:8px;padding-bottom:8px}
+.ag-stop{color:#E5484D !important;border-color:#F5C2C2 !important}
+
+.ag-review{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+.ag-review .rv-head h2{font-size:16px;color:#B45309}
+.ag-review .rv-groups{margin-top:12px}
+.ag-input{max-width:360px;margin:6px 0 10px}
+.ag-actions{margin-top:6px}
+
+.ag-ledger{margin-top:18px;border-top:1px solid var(--line);padding-top:4px}
+.ag-scroll{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:0 10px}
+.ag-scroll thead th{position:sticky;top:0;background:#fff;z-index:1;padding-top:10px}
+
+.ag-ins-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ag-headline{font-size:18px;letter-spacing:-.02em;line-height:1.35;margin:12px 0 14px}
+.ag-kpis{grid-template-columns:repeat(6,minmax(0,1fr))}
+.ag-ins{margin-top:4px}
+.ag-ins-block{border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.ag-ins-block h4{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light);margin-bottom:8px}
+.ag-ins-block ul{margin:0 0 0 18px;display:grid;gap:5px;font-size:13px;line-height:1.5}
+.ag-ins-block p{font-size:13px;line-height:1.5;margin-bottom:6px}
+
+@media (max-width:1180px){
+  .ag-systems,.ag-body,.ag-config{grid-template-columns:1fr}
+  .ag-systems .int-arrow{transform:rotate(90deg)}
+  .ag-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ag-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ag-config .cm-arrow{display:none}
+}
+/* wide tables scroll inside their card instead of stretching the page */
+.hub-main,.ag-card,.cm-live,.ag-body>div,.ag-system{min-width:0}
+@media (max-width:1000px){ .hub{grid-template-columns:minmax(0,1fr)} }
+/* status badges outside tables (review cards) — same look as .hub-table em */
+.ag-card em{font-style:normal;font-size:11px;font-weight:700;padding:4px 9px;border-radius:3px;background:#F2F2F2;color:var(--grey);white-space:nowrap}
+.ag-card em.ok{background:#E7F7EE;color:#12A150}
+.ag-card em.warn{background:#FEF3C7;color:#B45309}
+.ag-card em.bad{background:#FDECEC;color:#E5484D}
+.ag-card em.sched{background:#EAF1FF;color:#2B6BFF}
+.ag-review .rv-group-head>span{display:flex;gap:6px}
+.cm-live .ag-h3{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light);margin:18px 0 8px}

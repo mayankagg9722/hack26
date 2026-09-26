@@ -66,3 +66,12 @@
 @media (max-width:1180px){
   .map-lower{grid-template-columns:1fr}
 }
+
+/* Record walkthrough accordion */
+.acc-toggle{background:none;border:0;padding:0;font:inherit;font-size:16px;font-weight:700;letter-spacing:-.02em;color:inherit;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.acc-toggle:hover{color:var(--purple)}
+.acc-toggle:focus-visible{outline:2px solid var(--purple);outline-offset:3px;border-radius:3px}
+.acc-chev{display:inline-block;color:var(--purple);transition:transform .15s ease}
+.map-acc.is-open .acc-chev{transform:rotate(90deg)}
+.map-acc:not(.is-open) .hub-card-head{margin-bottom:6px}
+.acc-hint{margin:0}

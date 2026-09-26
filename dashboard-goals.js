@@ -5,6 +5,7 @@
 
   var body = document.getElementById('goalsBody');
   if (!body) return;
+  var MAX_ROWS = 5;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -57,8 +58,11 @@
             '<td><em class="' + statusClass(label) + '">' + esc(label) + '</em></td></tr>');
         });
       });
+      // keep the Overview short: the most relevant waves only, the rest live in the Goal planner
+      var shown = rows.slice(0, MAX_ROWS);
       body.innerHTML = '<table class="hub-table"><thead><tr><th>Goal</th><th>Source</th><th>Target</th><th>Schedule</th><th>Tickets</th><th>Status</th></tr></thead><tbody>' +
-        rows.join('') + '</tbody></table>';
+        shown.join('') + '</tbody></table>' +
+        (rows.length > shown.length ? '<p class="goal-more">Showing ' + shown.length + ' of ' + rows.length + ' waves across ' + goals.length + ' goals · <a href="planner.html">See all in the goal planner →</a></p>' : '');
     })
     .catch(function () {
       body.innerHTML = '<p class="goal-empty">Migration goals are unavailable — start the Zen integration service to see scheduled goals.</p>';

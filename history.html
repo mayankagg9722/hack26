@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Migration history — Zen</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="integrations.css" />
+<link rel="stylesheet" href="report.css?v=1" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="hub-body">
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav" href="dashboard.html">◫ Overview</a>
+    <a class="hub-nav" href="dashboard.html#customers">☰ Customers</a>
+    <a class="hub-nav" href="dashboard.html#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="dashboard.html#sessions">▶ Sessions</a>
+    <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
+    <a class="hub-nav" href="mapping.html">⇆ Field mapping</a>
+    <a class="hub-nav" href="planner.html">◎ Goal planner</a>
+    <a class="hub-nav is-active" href="history.html">▤ Migration history</a>
+    <a class="hub-nav" href="#">📚 Knowledge</a>
+    <a class="hub-nav" href="#">⚙ Agent settings</a>
+  </aside>
+  <main class="hub-main">
+    <header class="hub-head">
+      <div>
+        <h1>Migration history</h1>
+        <p>Every migration Zen has run, with its outcome. Open one to see the full report and reconciliation.</p>
+      </div>
+    </header>
+    <div class="int-alert" id="hsAlert" hidden></div>
+    <section class="rp-kpis" id="hsKpis"></section>
+    <article class="hub-card">
+      <div class="hub-card-head"><h2>Migrations</h2><span class="int-count" id="hsCount"></span></div>
+      <div class="int-table-wrap"><table class="hub-table hs-table">
+        <thead><tr><th>Migration ID</th><th>Source → Target</th><th>Start</th><th>End</th><th>Records processed</th><th>Success rate</th><th>Failures</th><th>Human interventions</th><th>Status</th><th></th></tr></thead>
+        <tbody id="hsRows"><tr><td colspan="10" class="wave-muted">Loading…</td></tr></tbody>
+      </table></div>
+    </article>
+  </main>
+</div>
+<script src="history.js?v=1"></script>
+</body>
+</html>

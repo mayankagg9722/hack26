@@ -26,3 +26,6 @@ ui-debug.log
 # os
 Thumbs.db
 .DS_Store
+
+# Dew UI build tooling
+ui/node_modules/

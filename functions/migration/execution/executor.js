@@ -260,6 +260,7 @@ class MigrationExecutor {
     const gw = goal.waves.find((w) => w.wave_id === run.current_wave_id);
     if (["RUNNING", "VALIDATING", "RECONCILING"].includes(gw.status)) transition(gw, "PAUSED", "Paused by " + by + ".", now);
     run.paused_phase = run.waves[run.current_wave_id].phase;
+    run.paused_at = now.toISOString();
     run.status = "PAUSED";
     run.status_reason = "Paused by " + by + ".";
     this.event(run, "warn", "Paused by " + by + ".");
@@ -281,6 +282,8 @@ class MigrationExecutor {
     }
     if (run.status !== "PAUSED" || !run.paused_phase) throw new ExecutionError(409, "Only a paused run can be resumed");
     const phase = run.paused_phase;
+    if (run.paused_at) run.paused_ms = (run.paused_ms || 0) + Math.max(0, now - new Date(run.paused_at));
+    run.paused_at = null;
     if (gw.status === "PAUSED") transition(gw, "RUNNING", "Resumed by " + by + ".", now);
     run.status = phase;
     run.paused_phase = null;
@@ -292,6 +295,7 @@ class MigrationExecutor {
 
   leaveReviewGate(run, goal, gw, by, now) {
     const gate = run.review_gate;
+    run.human_wait_ms = (run.human_wait_ms || 0) + Math.max(0, now - new Date(gate.opened_at));
     const pending = run.failures.filter((f) => f.status === "HUMAN_REVIEW_REQUIRED");
     run.review_gate = null;
     run.finished_at = null;
@@ -326,6 +330,7 @@ class MigrationExecutor {
     if (gw && ["RUNNING", "VALIDATING", "RECONCILING"].includes(gw.status)) transition(gw, "PAUSED", "Migration stopped by " + by + ".", now);
     else if (gw && gw.status === "PRECHECK") transition(gw, "PLANNED", "Migration stopped by " + by + ".", now);
     else if (gw && gw.status === "HUMAN_REVIEW_REQUIRED") transition(gw, "PAUSED", "Migration stopped by " + by + ".", now);
+    if (run.review_gate) run.human_wait_ms = (run.human_wait_ms || 0) + Math.max(0, now - new Date(run.review_gate.opened_at));
     for (const f of run.failures.filter((x) => x.status === "HUMAN_REVIEW_REQUIRED")) {
       f.status = "DEFERRED";
       f.review_reason = (f.review_reason || "") + " (not migrated — the migration was stopped by " + by + ")";

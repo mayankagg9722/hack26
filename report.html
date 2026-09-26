@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Migration report — Zen</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="demo.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="integrations.css" />
+<link rel="stylesheet" href="report.css?v=1" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='none' stroke='%239400FF' stroke-width='5' stroke-linecap='round' stroke-dasharray='62 14' transform='rotate(-50 16 16)'/></svg>" />
+</head>
+<body class="hub-body">
+<div class="demo-bar">
+  <a class="logo" href="index.html">
+    <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="62 14" transform="rotate(-50 16 16)"/></svg>
+    <span class="logo-word">Zen</span>
+  </a>
+  <span class="demo-tag">Admin Hub</span>
+  <div class="demo-bar-right">
+    <a class="btn btn-ghost sm" href="demo.html">Watch a live session</a>
+    <a class="btn btn-primary sm" href="index.html">Back to site</a>
+    <span class="hub-av">TG</span>
+  </div>
+</div>
+<div class="hub">
+  <aside class="hub-side">
+    <a class="hub-nav" href="dashboard.html">◫ Overview</a>
+    <a class="hub-nav" href="dashboard.html#customers">☰ Customers</a>
+    <a class="hub-nav" href="dashboard.html#blockers">⚠ Blockers</a>
+    <a class="hub-nav" href="dashboard.html#sessions">▶ Sessions</a>
+    <a class="hub-nav" href="integrations.html">⇄ Integrations</a>
+    <a class="hub-nav" href="mapping.html">⇆ Field mapping</a>
+    <a class="hub-nav" href="planner.html">◎ Goal planner</a>
+    <a class="hub-nav" href="history.html">▤ Migration history</a>
+    <a class="hub-nav" href="#">📚 Knowledge</a>
+    <a class="hub-nav" href="#">⚙ Agent settings</a>
+  </aside>
+  <main class="hub-main">
+    <div class="int-alert" id="rpAlert" hidden></div>
+    <div id="report" hidden>
+      <section class="rp-hero" id="rpHero"></section>
+      <section class="rp-kpis" id="rpKpis"></section>
+      <section class="hub-card rp-outcome">
+        <div class="hub-card-head"><h2>Where every record ended up</h2><button class="mini ghost" data-table="outcomeTable">Show table</button></div>
+        <div id="rpOutcome"></div>
+      </section>
+      <section class="rp-two">
+        <article class="hub-card"><div class="hub-card-head"><h2>Reconciliation</h2><span id="rpRecBadge"></span></div><div id="rpRec"></div></article>
+        <article class="hub-card"><div class="hub-card-head"><h2>Value delivered</h2><span class="int-count" id="rpValueNote"></span></div><div id="rpValue"></div></article>
+      </section>
+      <section class="hub-card">
+        <div class="hub-card-head"><h2>Failure breakdown</h2><button class="mini ghost" data-table="failureTable">Show table</button></div>
+        <div id="rpFailures"></div>
+      </section>
+      <section class="rp-two">
+        <article class="hub-card"><div class="hub-card-head"><h2>Waves</h2></div><div id="rpWaves"></div></article>
+        <article class="hub-card"><div class="hub-card-head"><h2>Records by Freshservice workspace</h2></div><div id="rpWorkspaces"></div></article>
+      </section>
+      <section class="rp-two">
+        <article class="hub-card"><div class="hub-card-head"><h2>Not migrated</h2><span class="int-count" id="rpUnresolvedCount"></span></div><div id="rpUnresolved"></div></article>
+        <article class="hub-card"><div class="hub-card-head"><h2>Timeline</h2></div><div id="rpTimeline"></div></article>
+      </section>
+      <p class="rp-foot" id="rpFoot"></p>
+    </div>
+    <div class="rp-tip" id="rpTip" role="tooltip" hidden></div>
+  </main>
+</div>
+<script src="report.js?v=1"></script>
+</body>
+</html>

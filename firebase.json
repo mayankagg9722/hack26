@@ -25,7 +25,9 @@
         "*.mov",
         "*.mp4",
         "devpost/**",
-        "functions/**"
+        "functions/**",
+        "ui/**",
+        "deck/**"
       ],
       "cleanUrls": true,
       "rewrites": [
@@ -71,6 +73,18 @@
         },
         {
           "source": "/api/demo/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/agent/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/customer-migrations",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/customer-migrations/**",
           "function": "integrationsApi"
         }
       ],
@@ -98,7 +112,9 @@
         "*.mov",
         "*.mp4",
         "devpost/**",
-        "functions/**"
+        "functions/**",
+        "ui/**",
+        "deck/**"
       ],
       "cleanUrls": true,
       "rewrites": [
@@ -144,6 +160,18 @@
         },
         {
           "source": "/api/demo/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/agent/**",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/customer-migrations",
+          "function": "integrationsApi"
+        },
+        {
+          "source": "/api/customer-migrations/**",
           "function": "integrationsApi"
         }
       ],

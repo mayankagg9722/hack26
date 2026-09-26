@@ -10,6 +10,8 @@
      DELETE /api/mapping?source=&target=
      /api/goals/...         migration goals — see goals/routes.js
      /api/runs/...          migration execution — see execution/routes.js
+     /api/customer-migrations/...  JSM customers → Freshservice employees — see customers/routes.js
+     /api/agent/...         migration agent tools (discover, map, run, insights) — see agent/routes.js
    Connection state is held by the client; "connect" verifies the adapter
    can reach its system. count/seed (demo data) may be sent as query params. */
 
@@ -25,6 +27,17 @@ const { MigrationExecutor } = require("./execution/executor");
 const { JsonFileRunStore } = require("./execution/runStore");
 const { createRunRoutes } = require("./execution/routes");
 const { resolveDepartmentsWithClaude } = require("./execution/aiDepartments");
+const { CustomerMigrationEngine } = require("./customers/engine");
+const { CustomerMigrationStore, EntityMappingStore } = require("./customers/stores");
+const { createCustomerMigrationRoutes } = require("./customers/routes");
+const { createJsmCustomers } = require("./customers/jsm");
+const { createFreshserviceRequesters } = require("./customers/freshservice");
+const { preExistingEmployeeEmails } = require("./customers/demoCustomers");
+const { MigrationAgentEngine } = require("./agent/engine");
+const { AgentStore } = require("./agent/store");
+const { createAgentRoutes } = require("./agent/routes");
+const { createJsmSource } = require("./agent/jsmSource");
+const { createFreshserviceTarget } = require("./agent/freshserviceTarget");
 
 const DECISIONS = new Set(["accepted", "modified", "rejected"]);
 
@@ -148,7 +161,37 @@ function createMigrationApi({
       target: createTargetAdapter(goal.target.id),
     }),
   });
-  const handleRuns = createRunRoutes({ executor, runStore });
+  const handleRuns = createRunRoutes({ executor, runStore, goalStore });
+
+  // JSM customers → Freshservice employees (store paths resolve per request so ZEN_DATA_DIR changes apply)
+  const customerDeps = () => {
+    const store = new CustomerMigrationStore();
+    const mappings = new EntityMappingStore();
+    const jsm = () => createJsmCustomers();
+    const freshservice = (run) => createFreshserviceRequesters(process.env, { seedEmails: preExistingEmployeeEmails(run && run.config ? run.config.customer_count : 100) });
+    return { store, mappings, jsm, freshservice, engine: new CustomerMigrationEngine({ store, mappings, jsm, freshservice }) };
+  };
+
+  // Migration agent (store paths resolve per request so ZEN_DATA_DIR changes apply)
+  const agentDeps = () => {
+    const agentStore = new AgentStore();
+    const source = () => createJsmSource();
+    const target = () => createFreshserviceTarget();
+    // demo runs keep their ID map apart from live ones
+    const idMap = (t) => new EntityMappingStore(t.mode === "mock" ? require("path").join(process.env.ZEN_DATA_DIR || require("path").join(require("os").tmpdir(), "zen-data"), "agent-entity-mappings.json") : undefined);
+    const engine = new MigrationAgentEngine({
+      store: agentStore, idMap, source, target, goalStore, mappingStore: store,
+      retryDelayMs: process.env.FRESHSERVICE_DOMAIN ? 1000 : 0,
+      getAiDepartmentResolver: () => {
+        if (aiDepartments !== undefined) return aiDepartments;
+        const key = anthropicKey();
+        return key ? (args) => resolveDepartmentsWithClaude({ ...args, apiKey: key }) : null;
+      },
+    });
+    return { engine, store: agentStore, source, target, getAnthropicKey: anthropicKey, aiSuggest: aiSuggest || null };
+  };
+  let agentHandler = null;
+  let agentDir = null;
 
   return async function handleMigrationApi(req, res) {
     if (req.method === "OPTIONS") {
@@ -224,6 +267,19 @@ function createMigrationApi({
           return;
         }
         res.json({ cleared: await target.reset() });
+        return;
+      }
+
+      if (group === "agent") {
+        // one engine per data dir, so its per-run locks are shared across requests
+        const dir = process.env.ZEN_DATA_DIR || "";
+        if (!agentHandler || agentDir !== dir) { agentHandler = createAgentRoutes(agentDeps()); agentDir = dir; }
+        await agentHandler(req, res, routeParts(req.path || "/"));
+        return;
+      }
+
+      if (group === "customer-migrations") {
+        await createCustomerMigrationRoutes(customerDeps())(req, res, routeParts(req.path || "/"));
         return;
       }
 

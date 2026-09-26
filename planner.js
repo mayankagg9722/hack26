@@ -570,6 +570,7 @@
           (run.status === 'PAUSED' || run.review_gate ? '<button class="mini" data-run="resume">Resume</button>' : '') +
           (['COMPLETED', 'STOPPED', 'FAILED'].indexOf(run.status) === -1 && run.status !== 'BLOCKED' ? '<button class="mini ghost" data-run="stop">Stop</button>' : '') +
           (['STOPPED', 'FAILED', 'BLOCKED'].indexOf(run.status) > -1 && goal && goal.status !== 'COMPLETED' ? '<button class="mini" id="retryRunBtn">Retry</button>' : '') +
+          '<a class="mini' + (run.status === 'COMPLETED' ? '' : ' ghost') + '" id="runReportLink" href="#">' + (run.status === 'COMPLETED' ? 'View migration report →' : 'Live report') + '</a>' +
         '</div></div>' +
       '<div class="run-steps">' + steps + '</div>' +
       '<div class="run-wave">Wave ' + (idx + 1) + ' of ' + run.wave_order.length + ' — <b>' + esc(wave.name) + '</b>' +
@@ -594,6 +595,8 @@
       b.addEventListener('click', function () { runControl(b.getAttribute('data-run')); });
     });
     var retryBtn = card.querySelector('#retryRunBtn');
+    var reportLink = card.querySelector('#runReportLink');
+    if (reportLink) reportLink.href = 'report.html?run=' + encodeURIComponent(run.run_id);
     if (retryBtn) retryBtn.addEventListener('click', retryRun);
     renderReview();
     var sum = card.querySelector('[data-rem-toggle]');

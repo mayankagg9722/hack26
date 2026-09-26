@@ -1,6 +1,8 @@
 /* HTTP routes for migration runs (mounted by ../api.js).
      POST /api/goals/:id/run        {override_blackout?}  approve (if needed) and start now
      GET  /api/runs?goal_id=        list runs (summaries)
+     GET  /api/runs?view=history    one compact row per run (migration history)
+     GET  /api/runs/:id/report      migration report + reconciliation
      GET  /api/runs/:id
      POST /api/runs/:id/advance     do the next unit of work (phase step or batch)
      POST /api/runs/:id/pause
@@ -14,6 +16,7 @@
 
 const { ExecutionError } = require("./executor");
 const { REVIEW_GROUPS } = require("./remediation");
+const { buildReport, historyRow } = require("./report");
 
 const pct = (n, d) => (d ? Math.round((n / d) * 1000) / 10 : 100);
 
@@ -90,7 +93,8 @@ function parseNow(v) {
   return d;
 }
 
-function createRunRoutes({ executor, runStore }) {
+function createRunRoutes({ executor, runStore, goalStore }) {
+  const goalOf = async (run) => (goalStore ? goalStore.get(run.goal_id) : null);
   return async function handleRuns(req, res, parts, params) {
     const [group, id, action] = parts;
     const body = req.body && typeof req.body === "object" ? req.body : {};
@@ -98,6 +102,19 @@ function createRunRoutes({ executor, runStore }) {
       if (group === "goals" && action === "run" && req.method === "POST") {
         const run = await executor.start(id, { now: parseNow(body.now), overrideBlackout: Boolean(body.override_blackout) });
         res.json({ run: summary(run) });
+        return;
+      }
+      if (group === "runs" && !id && req.method === "GET" && params.view === "history") {
+        const runs = await runStore.list({ goalId: params.goal_id || null });
+        const rows = [];
+        for (const r of runs) rows.push(historyRow(r, await goalOf(r)));
+        res.json({ history: rows });
+        return;
+      }
+      if (group === "runs" && id && action === "report" && req.method === "GET") {
+        const run = await runStore.get(id);
+        if (!run) throw new ExecutionError(404, "Run not found");
+        res.json({ report: buildReport(run, await goalOf(run)) });
         return;
       }
       if (group === "runs" && !id && req.method === "GET") {

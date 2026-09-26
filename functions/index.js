@@ -130,3 +130,17 @@ exports.integrationsApi = onRequest(
   },
   handleMigrationApi
 );
+
+/* ---------- scheduled customer migrations ----------
+   Starts JSM → Freshservice customer migrations whose scheduled time has come
+   and drives them with the same engine "Start Migration" uses. (Locally the
+   Integrations page also starts due migrations while it is open.) */
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { CustomerMigrationEngine } = require("./migration/customers/engine");
+const { CustomerMigrationStore, EntityMappingStore } = require("./migration/customers/stores");
+
+exports.customerMigrationScheduler = onSchedule({ schedule: "every 5 minutes", timeoutSeconds: 120 }, async () => {
+  const engine = new CustomerMigrationEngine({ store: new CustomerMigrationStore(), mappings: new EntityMappingStore() });
+  const ran = await engine.runScheduled({ budgetMs: 100000 });
+  logger.info("Scheduled customer migrations", { ran });
+});
